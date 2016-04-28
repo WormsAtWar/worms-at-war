@@ -1,0 +1,31 @@
+{
+  "name": "worms-at-war",
+  "description": "Tetris Snake Browser-MMO version.",
+  "version": "0.1.0",
+  "contributors": [{
+    "name": "Ezequiel N. Seidler",
+    "email": "enseidler@gmail.com" 
+  },{
+    "name": "Guillermo N. Sanchez",
+    "email": "guillens91@gmail.com"
+  }],
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo 'ERROR! Missing script tests. Modify package.json'"
+  },
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WormsAtWar/worms-at-war"
+  },
+  "bugs": {
+    "url": "https://github.com/WormsAtWar/worms-at-war/issues"
+  },
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.5"
+  },
+  "devDependencies": {},
+  "private": true,
+  "license": "GPLv3"
+}
