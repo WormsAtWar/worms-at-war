@@ -7,7 +7,7 @@ In ``Worms At War`` there is no snakes because they are dangerous! Instead, play
 ***
 
 ### Some Features (Without huge spoilers)
-- Bounty Hunter
+- Bounty Hunter  
 - Sound Effects
 - Worm Holes
 - Teams
