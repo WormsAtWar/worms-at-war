@@ -4,13 +4,16 @@
 	<title>Worms At War!</title>
 </head>
 
-<body>
+<body style="background: black;">
 	<div id="game">
-		<canvas id="gameCanvas" width="500" height="500" style="border: solid 2px black">
+		<canvas id="gameCanvas" width="500" height="500" style="border: solid 2px white">
 			Su navegador no soporta este elemento canvas! :(
 		</canvas>
 	</div>
-	
+	<div id="start" style="width: 500px; height:500px;">
+		<input id="nicknameInput" type="text" placeholder="Enter nickname here..."></input>
+		<input id="startButton" type="button" value="Start"/> 
+	</div>
 	<!-- SCRIPTS -->
 	<script type="text/javascript" src="libs/jquery-1.12.3.min.js"></script>
 	<script type="text/javascript" src="libs/createjs-2015.11.26.min.js"></script>

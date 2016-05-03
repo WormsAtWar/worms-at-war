@@ -1,4 +1,3 @@
-
 var players = new Array();
 
 var player = {
@@ -71,8 +70,6 @@ var IO = {
 
 };
 
-IO.init();
-
 
 // GAME ENGINE
 ///////////////
@@ -85,18 +82,19 @@ var Shape = createjs.Shape;
 var Ticker = createjs.Ticker;
 var Tween = createjs.Tween;
 
-var canvas = $("#gameCanvas").get(0);
 
+var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
-var renderedPlayer;
-renderPlayer();
-
-var renderedOpponents = new Array();
+///////////////////////////////////////////////
 
 Ticker.setFPS(60);
-bindEngineEvents();
 
+var nicknameInput;
+
+var renderedPlayer = undefined;
+
+var renderedOpponents = new Array();
 
 function renderPlayer() {
 	renderedPlayer = new Shape(new Graphics().beginFill('red'));
@@ -164,4 +162,40 @@ function renderOpponentsMovements(event) {
 	stage.update();
 }
 
+function renderGame() {
+	player.nickname = $("#nicknameInput").val() || '';
+	$("div#start").fadeOut();
+	$("div#start").css("display", "none");
+	$("div#game").fadeIn();
+	IO.init();
+	renderPlayer();
+	bindEngineEvents();
+}
+///////////////////////////////////////////////
 
+/*function renderStart() {
+	nicknameInput = new CanvasInput({
+		canvas: canvas,
+		x: canvas.width / 2 - 162,
+		y: canvas.height / 3,
+		fontSize: 18,
+		fontColor: '#212121',
+		fontWeight: 'bold',
+		width: 300,
+		height: 30,
+		padding: 8,
+		borderWidth: 2,
+		borderColor: '#000',
+		borderRadius: 30,
+		innerShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
+		placeHolder: 'Enter nickname here...',
+		onsubmit: renderGame
+	});
+}*/
+
+
+$("div#game").hide();
+
+$("#startButton").click(function () {
+    renderGame();
+});
