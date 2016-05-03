@@ -1,5 +1,9 @@
 # Worms At War
 
+[![Travis](https://img.shields.io/travis/WormsAtWar/worms-at-war.svg?maxAge=2592000?style=flat-square)]()
+[![Heroku](http://heroku-badge.herokuapp.com/?app=wormsatwar&style=flat-square&svg=1)](https://wormsatwar.herokuapp.com/)
+[![Dependencies](https://david-dm.org/WormsAtWar/worms-at-war.svg?style=flat-square)](https://david-dm.org/WormsAtWar/worms-at-war)
+
 It is a multiplayer browser game, whose initial idea is similar to that of ``Slither.io`` (remake of the classic game ``Tetris Snake``, expanding the gameplay to new level of massive games with players from around the world in real time).
 
 In ``Worms At War`` there is no snakes because they are dangerous! Instead, players can crawl through the game with "small" worms - at first - and then become cute but unstoppable giant worms... You must be careful when choosing where to go, as even the smallest can make you lose.
