@@ -1,8 +1,10 @@
 # Worms At War
 
-[![Travis](https://img.shields.io/travis/WormsAtWar/worms-at-war.svg?maxAge=2592000?style=flat-square)]()
-[![Heroku](http://heroku-badge.herokuapp.com/?app=wormsatwar&style=flat-square&svg=1)](https://wormsatwar.herokuapp.com/)
-[![Dependencies](https://david-dm.org/WormsAtWar/worms-at-war.svg?style=flat-square)](https://david-dm.org/WormsAtWar/worms-at-war)
+[![Build Status](https://travis-ci.org/WormsAtWar/worms-at-war.svg?branch=master)](https://travis-ci.org/WormsAtWar/worms-at-war)
+[![Heroku](http://heroku-badge.herokuapp.com/?app=wormsatwar&style=flat&svg=1)](https://wormsatwar.herokuapp.com/)
+[![Dependencies](https://david-dm.org/WormsAtWar/worms-at-war.svg?style=flat)](https://david-dm.org/WormsAtWar/worms-at-war)
+[![GitHub release](https://img.shields.io/github/release/WormsAtWar/worms-at-war.svg?maxAge=2592000)](https://github.com/WormsAtWar/worms-at-war/releases/tag/0.1.0)
+[![license](https://img.shields.io/github/license/WormsAtWar/worms-at-war.svg?maxAge=2592000)](https://github.com/WormsAtWar/worms-at-war/blob/master/LICENSE)
 
 It is a multiplayer browser game, whose initial idea is similar to that of ``Slither.io`` (remake of the classic game ``Tetris Snake``, expanding the gameplay to new level of massive games with players from around the world in real time).
 
