@@ -5,8 +5,6 @@ var io = require('socket.io')(server);
 
 var Vector = require('v2d');
 
-var waw = require('./game/worms-at-war');
-
 app.use(express.static(__dirname + '/public'));
 
 server.listen(process.env.PORT || 3000, function() {
