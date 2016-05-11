@@ -2,20 +2,24 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Worms At War!</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 
 <body style="background: black;">
-	<div id="game">
-		<canvas id="gameCanvas" width="500" height="500" style="border: solid 2px white">
-			Su navegador no soporta este elemento canvas! :(
-		</canvas>
-	</div>
-	<div id="start" style="width: 500px; height:500px;">
-		<input id="nicknameInput" type="text" placeholder="Enter nickname here..."></input>
-		<input id="startButton" type="button" value="Start"/> 
+	<div style="width: 1000px; height: 600px; border: solid 2px white; margin: 0 auto; margin-top: 20px;">
+		<div id="game">
+			<canvas id="gameCanvas" width="1000" height="600">
+				Su navegador no soporta este elemento canvas! :(
+			</canvas>
+		</div>
+		<div id="start" style="width: 200px; margin: 0 auto; margin-top: 30%;">
+			<input id="nicknameInput" class="form-control" type="text" placeholder="Enter nickname here..."></input>
+			<button type="button" id="startButton" class="btn btn-block btn-primary">Start</button>
+		</div>
 	</div>
 	<!-- SCRIPTS -->
 	<script type="text/javascript" src="libs/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="libs/bootstrap.min.js"></script>
 	<script type="text/javascript" src="libs/createjs-2015.11.26.min.js"></script>
 	<script type="text/javascript" src="libs/createjs-velocity-extension.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>

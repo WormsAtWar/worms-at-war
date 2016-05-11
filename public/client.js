@@ -1,11 +1,7 @@
+var player;
 var players = new Array();
 
-var player = {
-	id: '',
-	nickname: '',
-	x: 0,
-	y: 0
-};
+var status = 'waiting';
 
 
 // NETWORK LAYER
@@ -18,61 +14,44 @@ var IO = {
 	},
 
 	bindEvents : function() {
-		IO.socket.on('newStart', IO.onNewStart);
-		IO.socket.on('newOpponent', IO.onNewOpponent);
-		IO.socket.on('removePlayer', IO.onRemovePlayer);
-		IO.socket.on('playerUpdatedPosition', IO.onPlayerUpdatedPosition);
+		IO.socket.on('loginSuccess', IO.onLoginSuccess); //when I login
+		IO.socket.on('newPlayerLogin', IO.onNewPlayerLogin); // when other player login
+		IO.socket.on('playerUpdated', IO.onPlayerUpdated); // when any player change
+		IO.socket.on('playerDisconnect', IO.onPlayerDisconnect); // when other player disconnect
 	},
-	
-	onNewStart : function(data) {
-		player.id = data.id;
-		player.nickname = data.nickname;
-		player.x = data.x;
-		player.y = data.y;
 
+	onLoginSuccess : function(data) {
+		player = data.player;
 		players = data.currentPlayers;
-		players[player.id] = {
-			id: player.id,
-			nickname: player.nickname,
-			x: player.x,
-			y: player.y
-		};
-
-		renderOpponents();
+		status = 'success';
 	},
 
-	onNewOpponent : function(data) {
-		players[data.id] = data;
-		renderOpponent(data);
+	onNewPlayerLogin : function(newPlayer) {
+		players[newPlayer.id] = newPlayer;
+		console.log(players);
+		console.log(newPlayer.id + ' connects');
 	},
 
-	onRemovePlayer : function(data) {
-		stage.removeChild(renderedOpponents[data.id]);
-		players.splice(data.id, 1, undefined);
-		renderedOpponents.splice(data.id, 1, undefined);
-		//console.log('opponent ' + data.id + ' removed')
-		stage.update();
+	onPlayerUpdated : function(data) {
+		if(data.itsMe) {
+			player = data.player;
+		} else {
+			players[data.player.id] = data.player;
+		}
+		//console.log(data.player);
 	},
 
-	onPlayerUpdatedPosition : function(data) {
-		players[data.id] = data;
-	},
-
-	updatePosition : function(event) {
-		var newX = renderedPlayer.x;
-		var newY = renderedPlayer.y;
-
-		player.x = newX;
-		player.y = newY;
-
-		IO.socket.emit('updatePosition', player);
-	},
+	onPlayerDisconnect : function(id) {
+		players.splice(id, 1, undefined);
+		console.log(id + ' disconnects');
+	}
 
 };
 
 
-// GAME ENGINE
-///////////////
+/////////////////
+// GAME ENGINE //
+/////////////////
 
 // Short alias
 var Stage = createjs.Stage;
@@ -82,120 +61,112 @@ var Shape = createjs.Shape;
 var Ticker = createjs.Ticker;
 var Tween = createjs.Tween;
 
-
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
-///////////////////////////////////////////////
-
 Ticker.setFPS(60);
 
-var nicknameInput;
+/////////////////////////////
+//-------------------------//
+//        GAME LOOP        //
+//-------------------------//
+/////////////////////////////
+Ticker.addEventListener('tick', function(event) {
+	if(status == 'success') {
+		update();
+		renderFrame();
+	}
+});
+/////////////////////////////
+/////////////////////////////
 
-var renderedPlayer = undefined;
+function update() {
+	var state = {
+		mouseX: stage.mouseX,
+		mouseY: stage.mouseY
+	};
+	IO.socket.emit('playerUpdate', state);
+}
 
-var renderedOpponents = new Array();
+var Render = {
+	player: null,
+	opponents: new Array(),
+};
+
+function renderFrame() {
+	renderPlayer();
+	renderOpponents();
+	stage.update();
+}
 
 function renderPlayer() {
-	renderedPlayer = new Shape(new Graphics().beginFill('red'));
-	renderedPlayer.graphics.drawCircle(player.x, player.y, 40);
-	renderedPlayer.setPPS(170, 170);
-	stage.addChild(renderedPlayer);
+	if(playerNotRendered()) {
+		Render.player = new Shape(new Graphics().beginFill('yellow'));
+		Render.player.graphics.drawCircle(player.x, player.y, 20);
+		stage.addChild(Render.player);
+	} else {
+		Render.player.x = player.x;
+		Render.player.y = player.y;
+	}
 }
 
 function renderOpponents() {
-	for (id in players) {
-		var opponent = players[id];
 
-		if (id != player.id && opponent != undefined) {
-			var renderedOpponent = new Shape(new Graphics().beginFill('red'));
-			renderedOpponent.graphics.drawCircle(-player.x, -player.y, 40);
-			renderedOpponent.setPPS(170, 170);
-			renderedOpponents[opponent.id] = renderedOpponent;
-			stage.addChild(renderedOpponent);
+	for(id in players) {
+		var opponent = players[id];
+		if(itsOpponent(opponent)) {
+			renderOpponent(opponent);
 		} else {
-			renderedOpponents[id] = undefined;
+			Render.opponents[opponent.id] = null;
 		}
 	}
 }
 
 function renderOpponent(opponent) {
-	if (opponent.id != player.id) {
-		var renderedOpponent = new Shape(new Graphics().beginFill('red'));
-		renderedOpponent.graphics.drawCircle(opponent.x, opponent.y, 40);
-		renderedOpponent.setPPS(170, 170);
-		renderedOpponents[opponent.id] = renderedOpponent;
-		stage.addChild(renderedOpponent);
+	if(opponentNotRendered(opponent.id)) {
+		var opponentX = player.x == 0 ? -player.x : opponent.x;
+		var opponentY = player.y == 0 ? -player.y : opponent.y;
+		
+		Render.opponents[opponent.id] = new Shape(new Graphics().beginFill('yellow'));
+		Render.opponents[opponent.id].graphics.drawCircle(opponentX, opponentY, 20);
+		stage.addChild(Render.opponents[opponent.id]);
 	} else {
-		renderedOpponents[opponent.id] = undefined;
+		Render.opponents[opponent.id].x = opponent.x;
+		Render.opponents[opponent.id].y = opponent.y;
 	}
 }
 
-function bindEngineEvents() {
-	// Player Events
-	Ticker.addEventListener('tick', IO.updatePosition);
-	Ticker.addEventListener('tick', renderPlayerMovements);
-
-	// Opponents Events
-	Ticker.addEventListener('tick', renderOpponentsMovements);
+function itsOpponent(opponent) {
+	return opponent.id != player.id && opponent != null;
 }
 
-function renderPlayerMovements(event) {
-	var duration = renderedPlayer.timeToDestination(stage.mouseX, stage.mouseY);
-
-	Tween.get(renderedPlayer, { override: true })
-		.to({ x: stage.mouseX, y: stage.mouseY }, duration);
-
-	stage.update();
+function playerNotRendered() {
+	return Render.player == null;
 }
 
-function renderOpponentsMovements(event) {
-	
-	for (id in renderedOpponents) {
-		if (renderedOpponents[id] != undefined) {
-			var opponent = players[id];
-			renderedOpponents[id].x = opponent.x;
-			renderedOpponents[id].y = opponent.y;
-			//console.log('Opponent ' + opponent.id + ' moves to: x=' + opponent.x + ' y=' + opponent.y);
-		}
-	}
-	stage.update();
+function opponentNotRendered(id) {
+	return Render.opponents[id] == null;
 }
+
 
 function renderGame() {
-	player.nickname = $("#nicknameInput").val() || '';
-	$("div#start").fadeOut();
-	$("div#start").css("display", "none");
-	$("div#game").fadeIn();
+	var nickname = $("#nicknameInput").val() || '';
+	
+	showGameStage()
 	IO.init();
-	renderPlayer();
-	bindEngineEvents();
+	
+	IO.socket.emit('playerLogin', nickname);
+}
+
+function showGameStage() {
+	$("#start").fadeOut();
+	$("#start").css("display", "none");
+	$("#game").fadeIn();
 }
 ///////////////////////////////////////////////
 
-/*function renderStart() {
-	nicknameInput = new CanvasInput({
-		canvas: canvas,
-		x: canvas.width / 2 - 162,
-		y: canvas.height / 3,
-		fontSize: 18,
-		fontColor: '#212121',
-		fontWeight: 'bold',
-		width: 300,
-		height: 30,
-		padding: 8,
-		borderWidth: 2,
-		borderColor: '#000',
-		borderRadius: 30,
-		innerShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
-		placeHolder: 'Enter nickname here...',
-		onsubmit: renderGame
-	});
-}*/
+$("#game").hide();
 
-
-$("div#game").hide();
-
-$("#startButton").click(function () {
+$("#startButton").click(function() {
     renderGame();
 });
