@@ -46,6 +46,7 @@ io.sockets.on('connection', function(socket) {
 			nickname: nickname == null ? '' : nickname,
 			x: 0,
 			y: 0,
+			headRotation: 0, // degrees
 			lastUpdate: null
 		};
 
@@ -69,6 +70,7 @@ io.sockets.on('connection', function(socket) {
 		updateDestiny(state);
 		updateVelocity(delta);
 		updatePosition(delta);
+		updateHeadRotation();
 
 		players[myID].lastUpdate = now;
 
@@ -128,6 +130,12 @@ io.sockets.on('connection', function(socket) {
 
 		players[myID].x = cartesianPosition.x;
 		players[myID].y = cartesianPosition.y;
+	}
+
+	function updateHeadRotation(delta) {
+		var angleRadians = polarVelocity.w;
+
+		players[myID].headRotation = angleRadians * (180 / Math.PI);
 	}
 
 	function mousePosition(state) {

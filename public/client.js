@@ -28,8 +28,6 @@ var IO = {
 
 	onNewPlayerLogin : function(newPlayer) {
 		players[newPlayer.id] = newPlayer;
-		console.log(players);
-		console.log(newPlayer.id + ' connects');
 	},
 
 	onPlayerUpdated : function(data) {
@@ -38,12 +36,10 @@ var IO = {
 		} else {
 			players[data.player.id] = data.player;
 		}
-		//console.log(data.player);
 	},
 
 	onPlayerDisconnect : function(id) {
 		players.splice(id, 1, undefined);
-		console.log(id + ' disconnects');
 	}
 
 };
@@ -101,12 +97,12 @@ function renderFrame() {
 
 function renderPlayer() {
 	if(playerNotRendered()) {
-		Render.player = new Shape(new Graphics().beginFill('yellow'));
-		Render.player.graphics.drawCircle(player.x, player.y, 20);
+		renderHead(player.x, player.y);
 		stage.addChild(Render.player);
 	} else {
 		Render.player.x = player.x;
 		Render.player.y = player.y;
+		Render.player.rotation = player.headRotation;
 	}
 }
 
@@ -127,13 +123,24 @@ function renderOpponent(opponent) {
 		var opponentX = player.x == 0 ? -player.x : opponent.x;
 		var opponentY = player.y == 0 ? -player.y : opponent.y;
 		
-		Render.opponents[opponent.id] = new Shape(new Graphics().beginFill('yellow'));
-		Render.opponents[opponent.id].graphics.drawCircle(opponentX, opponentY, 20);
+		renderHead(opponentX, opponentY);
 		stage.addChild(Render.opponents[opponent.id]);
 	} else {
 		Render.opponents[opponent.id].x = opponent.x;
 		Render.opponents[opponent.id].y = opponent.y;
+		Render.opponents[id].rotation = opponent.headRotation;
 	}
+}
+
+function renderHead(x, y) {
+	Render.opponents[id] = new Shape();
+	Render.opponents[id].graphics.setStrokeStyle(2,"square").beginStroke("#000000");
+	Render.opponents[id].graphics.beginFill('yellow');
+	Render.opponents[id].graphics.drawCircle(x, y, 20);
+	Render.opponents[id].graphics.beginFill("white").drawCircle(5, -8, 8);
+	Render.opponents[id].graphics.beginFill("white").drawCircle(5, 8, 8);
+	Render.opponents[id].graphics.beginFill("black").drawCircle(9, -8, 2);
+	Render.opponents[id].graphics.beginFill("black").drawCircle(9, 8, 2);
 }
 
 function itsOpponent(opponent) {
