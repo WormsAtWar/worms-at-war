@@ -97,13 +97,24 @@ function renderFrame() {
 
 function renderPlayer() {
 	if(playerNotRendered()) {
-		renderHead(player.x, player.y);
+		renderPlayerHead();
 		stage.addChild(Render.player);
 	} else {
 		Render.player.x = player.x;
 		Render.player.y = player.y;
 		Render.player.rotation = player.headRotation;
 	}
+}
+
+function renderPlayerHead(x, y) {
+	Render.player = new Shape();
+	Render.player.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
+	Render.player.graphics.beginFill('yellow');
+	Render.player.graphics.drawCircle(player.x, player.y, 20);
+	Render.player.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
+	Render.player.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
+	Render.player.graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
+	Render.player.graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
 }
 
 function renderOpponents() {
@@ -123,7 +134,7 @@ function renderOpponent(opponent) {
 		var opponentX = player.x == 0 ? -player.x : opponent.x;
 		var opponentY = player.y == 0 ? -player.y : opponent.y;
 		
-		renderHead(opponentX, opponentY);
+		renderOpponentHead(opponent.id, opponentX, opponentY);
 		stage.addChild(Render.opponents[opponent.id]);
 	} else {
 		Render.opponents[opponent.id].x = opponent.x;
@@ -132,15 +143,15 @@ function renderOpponent(opponent) {
 	}
 }
 
-function renderHead(x, y) {
+function renderOpponentHead(id, x, y) {
 	Render.opponents[id] = new Shape();
 	Render.opponents[id].graphics.setStrokeStyle(2,"square").beginStroke("#000000");
 	Render.opponents[id].graphics.beginFill('yellow');
 	Render.opponents[id].graphics.drawCircle(x, y, 20);
-	Render.opponents[id].graphics.beginFill("white").drawCircle(5, -8, 8);
-	Render.opponents[id].graphics.beginFill("white").drawCircle(5, 8, 8);
-	Render.opponents[id].graphics.beginFill("black").drawCircle(9, -8, 2);
-	Render.opponents[id].graphics.beginFill("black").drawCircle(9, 8, 2);
+	Render.opponents[id].graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
+	Render.opponents[id].graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
+	Render.opponents[id].graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
+	Render.opponents[id].graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
 }
 
 function itsOpponent(opponent) {
