@@ -39,7 +39,7 @@ var IO = {
 	},
 
 	onPlayerDisconnect : function(id) {
-		players.splice(id, 1, undefined);
+		players.splice(id, 1, null);
 	}
 
 };
@@ -54,6 +54,7 @@ var Stage = createjs.Stage;
 var Container = createjs.Container;
 var Graphics = createjs.Graphics;
 var Shape = createjs.Shape;
+var Text = createjs.Text;
 var Ticker = createjs.Ticker;
 var Tween = createjs.Tween;
 
@@ -87,11 +88,13 @@ function update() {
 var Render = {
 	player: null,
 	opponents: new Array(),
+	nicknames: new Array(),
 };
 
 function renderFrame() {
 	renderPlayer();
 	renderOpponents();
+	renderNicknames();
 	stage.update();
 }
 
@@ -109,7 +112,7 @@ function renderPlayer() {
 function renderPlayerHead(x, y) {
 	Render.player = new Shape();
 	Render.player.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
-	Render.player.graphics.beginFill('yellow');
+	Render.player.graphics.beginFill('green');
 	Render.player.graphics.drawCircle(player.x, player.y, 20);
 	Render.player.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
 	Render.player.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
@@ -118,13 +121,13 @@ function renderPlayerHead(x, y) {
 }
 
 function renderOpponents() {
-
 	for(id in players) {
 		var opponent = players[id];
 		if(itsOpponent(opponent)) {
 			renderOpponent(opponent);
 		} else {
-			Render.opponents[opponent.id] = null;
+			stage.removeChild(Render.opponents[id]);
+			Render.opponents[id] = null;
 		}
 	}
 }
@@ -146,7 +149,7 @@ function renderOpponent(opponent) {
 function renderOpponentHead(id, x, y) {
 	Render.opponents[id] = new Shape();
 	Render.opponents[id].graphics.setStrokeStyle(2,"square").beginStroke("#000000");
-	Render.opponents[id].graphics.beginFill('yellow');
+	Render.opponents[id].graphics.beginFill('green');
 	Render.opponents[id].graphics.drawCircle(x, y, 20);
 	Render.opponents[id].graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
 	Render.opponents[id].graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
@@ -154,8 +157,36 @@ function renderOpponentHead(id, x, y) {
 	Render.opponents[id].graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
 }
 
+function renderNicknames() {
+	for(id in players) {
+		var opponent = players[id];
+		if(itsOpponent(opponent)) {
+			renderNickname(opponent);
+		} else {
+			stage.removeChild(Render.nicknames[id]);
+			Render.nicknames[id] = null;
+		}
+	}
+}
+
+function renderNickname(opponent) {
+	if(nicknameNotRendered(opponent.id)) {
+		var opponentNicknameX = player.x == 0 ? -player.x : opponent.x;
+		var opponentNicknameY = player.y == 0 ? -player.y + 20 : opponent.y + 20;
+		console.log("entro putoo");
+		Render.nicknames[opponent.id] = new Text(opponent.nickname, "14px Arial", "#FFFFFF");
+ 		Render.nicknames[opponent.id].x = opponentNicknameX;
+ 		Render.nicknames[opponent.id].y = opponentNicknameY;
+		stage.addChild(Render.nicknames[opponent.id]);
+	} else {
+		Render.nicknames[opponent.id].x = opponent.x;
+		Render.nicknames[opponent.id].y = opponent.y + 20;
+		//Render.nicknames[id].rotation = opponent.headRotation;
+	}
+}
+
 function itsOpponent(opponent) {
-	return opponent.id != player.id && opponent != null;
+	return opponent != null ? opponent.id != player.id : false;
 }
 
 function playerNotRendered() {
@@ -166,6 +197,9 @@ function opponentNotRendered(id) {
 	return Render.opponents[id] == null;
 }
 
+function nicknameNotRendered(id) {
+	return Render.nicknames[id] == null;
+}
 
 function renderGame() {
 	var nickname = $("#nicknameInput").val() || '';
