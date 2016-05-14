@@ -103,9 +103,10 @@ function renderPlayer() {
 		renderPlayerHead();
 		stage.addChild(Render.player);
 	} else {
-		Render.player.x = player.x;
-		Render.player.y = player.y;
-		Render.player.rotation = player.headRotation;
+		Tween.get(Render.player).to({x: player.x, y: player.y, rotation: player.headRotation}, player.delta)
+		//Render.player.x = player.x;
+		//Render.player.y = player.y;
+		//Render.player.rotation = player.headRotation;
 	}
 }
 
@@ -140,9 +141,10 @@ function renderOpponent(opponent) {
 		renderOpponentHead(opponent.id, opponentX, opponentY);
 		stage.addChild(Render.opponents[opponent.id]);
 	} else {
-		Render.opponents[opponent.id].x = opponent.x;
-		Render.opponents[opponent.id].y = opponent.y;
-		Render.opponents[id].rotation = opponent.headRotation;
+		Tween.get(Render.opponents[opponent.id]).to({x: opponent.x, y: opponent.y, rotation: opponent.headRotation}, opponent.delta);
+		//Render.opponents[opponent.id].x = opponent.x;
+		//Render.opponents[opponent.id].y = opponent.y;
+		//Render.opponents[id].rotation = opponent.headRotation;
 	}
 }
 
@@ -173,15 +175,14 @@ function renderNickname(opponent) {
 	if(nicknameNotRendered(opponent.id)) {
 		var opponentNicknameX = player.x == 0 ? -player.x : opponent.x;
 		var opponentNicknameY = player.y == 0 ? -player.y + 20 : opponent.y + 20;
-		console.log("entro putoo");
 		Render.nicknames[opponent.id] = new Text(opponent.nickname, "14px Arial", "#FFFFFF");
  		Render.nicknames[opponent.id].x = opponentNicknameX;
  		Render.nicknames[opponent.id].y = opponentNicknameY;
 		stage.addChild(Render.nicknames[opponent.id]);
 	} else {
-		Render.nicknames[opponent.id].x = opponent.x;
-		Render.nicknames[opponent.id].y = opponent.y + 20;
-		//Render.nicknames[id].rotation = opponent.headRotation;
+		Tween.get(Render.nicknames[opponent.id]).to({x: opponent.x, y: opponent.y + 20}, opponent.delta);
+		//Render.nicknames[opponent.id].x = opponent.x;
+		//Render.nicknames[opponent.id].y = opponent.y + 20;
 	}
 }
 

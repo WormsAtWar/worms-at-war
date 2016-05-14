@@ -47,7 +47,8 @@ io.sockets.on('connection', function(socket) {
 			x: 0,
 			y: 0,
 			headRotation: 0, // degrees
-			lastUpdate: null
+			lastUpdate: null,
+			delta: null
 		};
 
 		myID = playerID;
@@ -73,6 +74,7 @@ io.sockets.on('connection', function(socket) {
 		updateHeadRotation();
 
 		players[myID].lastUpdate = now;
+		players[myID].delta = delta;
 
 		var playerUpdated = players[myID];
 
