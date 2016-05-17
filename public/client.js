@@ -1,5 +1,5 @@
-var player;
-var players = new Array();
+var worm;
+var otherWorms = new Array();
 
 var status = 'waiting';
 
@@ -14,32 +14,33 @@ var IO = {
 	},
 
 	bindEvents : function() {
-		IO.socket.on('loginSuccess', IO.onLoginSuccess); //when I login
-		IO.socket.on('newPlayerLogin', IO.onNewPlayerLogin); // when other player login
-		IO.socket.on('playerUpdated', IO.onPlayerUpdated); // when any player change
-		IO.socket.on('playerDisconnect', IO.onPlayerDisconnect); // when other player disconnect
+		IO.socket.on('loginSuccess', IO.onLoginSuccess);
+		IO.socket.on('newWormLogin', IO.onNewWormLogin);
+		IO.socket.on('wormUpdated', IO.onWormUpdated);
+		IO.socket.on('otherWormUpdated', IO.onOtherWormUpdated);
+		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
 	onLoginSuccess : function(data) {
-		player = data.player;
-		players = data.currentPlayers;
+		worm = data.worm;
+		otherWorms = data.otherWorms;
 		status = 'success';
 	},
 
-	onNewPlayerLogin : function(newPlayer) {
-		players[newPlayer.id] = newPlayer;
+	onNewWormLogin : function(data) {
+		otherWorms[data.id] = data;
 	},
 
-	onPlayerUpdated : function(data) {
-		if(data.itsMe) {
-			player = data.player;
-		} else {
-			players[data.player.id] = data.player;
-		}
+	onWormUpdated : function(data) {
+		worm = data;
 	},
 
-	onPlayerDisconnect : function(id) {
-		players.splice(id, 1, null);
+	onOtherWormUpdated : function(data) {
+		otherWorms[data.id] = data;
+	},
+
+	onOtherWormDisconnect : function(id) {
+		otherWorms.splice(id, 1, null);
 	}
 
 };
@@ -82,120 +83,117 @@ function update() {
 		mouseX: stage.mouseX,
 		mouseY: stage.mouseY
 	};
-	IO.socket.emit('playerUpdate', state);
+	IO.socket.emit('wormUpdate', state);
 }
 
 var Render = {
-	player: null,
-	opponents: new Array(),
+	worm: null,
+	otherWorms: new Array(),
 	nicknames: new Array(),
 };
 
 function renderFrame() {
-	renderPlayer();
-	renderOpponents();
+	renderWorm();
+	renderOtherWorms();
 	renderNicknames();
 	stage.update();
 }
 
-function renderPlayer() {
-	if(playerNotRendered()) {
-		renderPlayerHead();
-		stage.addChild(Render.player);
+function renderWorm() {
+	if(wormNotRendered()) {
+		renderWormHead();
+		stage.addChild(Render.worm);
 	} else {
-		Tween.get(Render.player).to({x: player.x, y: player.y, rotation: player.headRotation}, player.delta)
-		//Render.player.x = player.x;
-		//Render.player.y = player.y;
-		//Render.player.rotation = player.headRotation;
+		Render.worm.x = worm.x;
+		Render.worm.y = worm.y;
+		Render.worm.rotation = worm.headRotation;
 	}
 }
 
-function renderPlayerHead(x, y) {
-	Render.player = new Shape();
-	Render.player.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
-	Render.player.graphics.beginFill('green');
-	Render.player.graphics.drawCircle(player.x, player.y, 20);
-	Render.player.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
-	Render.player.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
-	Render.player.graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
-	Render.player.graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
+function renderWormHead(x, y) {
+	Render.worm = new Shape();
+	Render.worm.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
+	Render.worm.graphics.beginFill('green');
+	Render.worm.graphics.drawCircle(worm.x, worm.y, 20);
+	Render.worm.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
+	Render.worm.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
+	Render.worm.graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
+	Render.worm.graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
 }
 
-function renderOpponents() {
-	for(id in players) {
-		var opponent = players[id];
-		if(itsOpponent(opponent)) {
-			renderOpponent(opponent);
+function renderOtherWorms() {
+	for(id in otherWorms) {
+		var otherWorm = otherWorms[id];
+		if(itsOtherWorm(otherWorm)) {
+			renderOtherWorm(otherWorm);
 		} else {
-			stage.removeChild(Render.opponents[id]);
-			Render.opponents[id] = null;
+			stage.removeChild(Render.otherWorms[id]);
+			Render.otherWorms[id] = null;
 		}
 	}
 }
 
-function renderOpponent(opponent) {
-	if(opponentNotRendered(opponent.id)) {
-		var opponentX = player.x == 0 ? -player.x : opponent.x;
-		var opponentY = player.y == 0 ? -player.y : opponent.y;
+function renderOtherWorm(otherWorm) {
+	if(otherWormNotRendered(otherWorm.id)) {
+		var otherWormX = worm.x == 0 ? -worm.x : otherWorm.x;
+		var otherWormY = worm.y == 0 ? -worm.y : otherWorm.y;
 		
-		renderOpponentHead(opponent.id, opponentX, opponentY);
-		stage.addChild(Render.opponents[opponent.id]);
+		renderOtherWormHead(otherWorm.id, otherWormX, otherWormY);
+		stage.addChild(Render.otherWorms[otherWorm.id]);
 	} else {
-		Tween.get(Render.opponents[opponent.id]).to({x: opponent.x, y: opponent.y, rotation: opponent.headRotation}, opponent.delta);
-		//Render.opponents[opponent.id].x = opponent.x;
-		//Render.opponents[opponent.id].y = opponent.y;
-		//Render.opponents[id].rotation = opponent.headRotation;
+		Render.otherWorms[otherWorm.id].x = otherWorm.x;
+		Render.otherWorms[otherWorm.id].y = otherWorm.y;
+		Render.otherWorms[otherWorm.id].rotation = otherWorm.headRotation;
 	}
 }
 
-function renderOpponentHead(id, x, y) {
-	Render.opponents[id] = new Shape();
-	Render.opponents[id].graphics.setStrokeStyle(2,"square").beginStroke("#000000");
-	Render.opponents[id].graphics.beginFill('green');
-	Render.opponents[id].graphics.drawCircle(x, y, 20);
-	Render.opponents[id].graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
-	Render.opponents[id].graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
-	Render.opponents[id].graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
-	Render.opponents[id].graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
+function renderOtherWormHead(id, x, y) {
+	Render.otherWorms[id] = new Shape();
+	Render.otherWorms[id].graphics.setStrokeStyle(2,"square").beginStroke("#000000");
+	Render.otherWorms[id].graphics.beginFill('green');
+	Render.otherWorms[id].graphics.drawCircle(x, y, 20);
+	Render.otherWorms[id].graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
+	Render.otherWorms[id].graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
+	Render.otherWorms[id].graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
+	Render.otherWorms[id].graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
 }
 
 function renderNicknames() {
-	for(id in players) {
-		var opponent = players[id];
-		if(itsOpponent(opponent)) {
-			renderNickname(opponent);
+	for(id in otherWorms) {
+		var otherWorm = otherWorms[id];
+		if(itsOtherWorm(otherWorm)) {
+			renderNickname(otherWorm);
 		} else {
 			stage.removeChild(Render.nicknames[id]);
-			Render.nicknames[id] = null;
+			Render.otherWorms[id] = null;
 		}
 	}
 }
 
-function renderNickname(opponent) {
-	if(nicknameNotRendered(opponent.id)) {
-		var opponentNicknameX = player.x == 0 ? -player.x : opponent.x;
-		var opponentNicknameY = player.y == 0 ? -player.y + 20 : opponent.y + 20;
-		Render.nicknames[opponent.id] = new Text(opponent.nickname, "14px Arial", "#FFFFFF");
- 		Render.nicknames[opponent.id].x = opponentNicknameX;
- 		Render.nicknames[opponent.id].y = opponentNicknameY;
-		stage.addChild(Render.nicknames[opponent.id]);
+function renderNickname(otherWorm) {
+	if(nicknameNotRendered(otherWorm.id)) {
+		var otherWormNicknameX = worm.x == 0 ? -worm.x : otherWorm.x;
+		var otherWormNicknameY = worm.y == 0 ? -worm.y + 20 : otherWorm.y + 20;
+		Render.nicknames[otherWorm.id] = new Text(otherWorm.nickname, "14px Arial", "#FFFFFF");
+ 		Render.nicknames[otherWorm.id].x = otherWormNicknameX;
+ 		Render.nicknames[otherWorm.id].y = otherWormNicknameY;
+		stage.addChild(Render.nicknames[otherWorm.id]);
 	} else {
-		Tween.get(Render.nicknames[opponent.id]).to({x: opponent.x, y: opponent.y + 20}, opponent.delta);
-		//Render.nicknames[opponent.id].x = opponent.x;
-		//Render.nicknames[opponent.id].y = opponent.y + 20;
+		Render.nicknames[otherWorm.id].x = otherWorm.x;
+		Render.nicknames[otherWorm.id].y = otherWorm.y + 20;
 	}
 }
 
-function itsOpponent(opponent) {
-	return opponent != null ? opponent.id != player.id : false;
+function itsOtherWorm(otherWorm) {
+	return otherWorm != null ? otherWorm.id != worm.id : false;
 }
 
-function playerNotRendered() {
-	return Render.player == null;
+function wormNotRendered() {
+	return Render.worm == null;
 }
 
-function opponentNotRendered(id) {
-	return Render.opponents[id] == null;
+function otherWormNotRendered(id) {
+	return Render.otherWorms[id] == null;
 }
 
 function nicknameNotRendered(id) {
@@ -208,7 +206,7 @@ function renderGame() {
 	showGameStage()
 	IO.init();
 	
-	IO.socket.emit('playerLogin', nickname);
+	IO.socket.emit('wormLogin', nickname);
 }
 
 function showGameStage() {

@@ -2,8 +2,9 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-
 var Vector = require('v2d');
+
+var Worm = require('./model/worm');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -15,8 +16,8 @@ server.listen(process.env.PORT || 3000, function() {
 /*------------------ GAME ------------------*/
 /*------------------------------------------*/
 
-var playerID = 0;
-var players = new Array();
+var wormID = 0;
+var worms = new Array();
 
 io.sockets.on('connection', function(socket) {
 
@@ -34,38 +35,30 @@ io.sockets.on('connection', function(socket) {
 	//////////////// Events Handlers ////////////////
 
 	function bindEvents() {
-		socket.on('playerLogin', onPlayerLogin);
-		socket.on('playerUpdate', onPlayerUpdate);
+		socket.on('wormLogin', onWormLogin);
+		socket.on('wormUpdate', onWormUpdate);
 		socket.on('disconnect', onDisconnect);
 	}
 
 
-	function onPlayerLogin(nickname) {
-		var player = {
-			id: playerID,
-			nickname: nickname == null ? '' : nickname,
-			x: 0,
-			y: 0,
-			headRotation: 0, // degrees
-			lastUpdate: null,
-			delta: null
-		};
+	function onWormLogin(nickname) {
+		var worm = new Worm(wormID, nickname, 0, 0);
 
-		myID = playerID;
+		myID = wormID;
 
-		socket.emit('loginSuccess', { player: player, currentPlayers: players });
+		socket.emit('loginSuccess', { worm: worm, otherWorms: worms });
 
-		players[myID] = player;
+		worms[myID] = worm;
 
-		socket.broadcast.emit('newPlayerLogin', players[myID]);
+		socket.broadcast.emit('newWormLogin', worms[myID]);
 
-		playerID++;
+		wormID++;
 	}
 
 
-	function onPlayerUpdate(state) {
+	function onWormUpdate(state) {
 		var now = Date.now();
-		var then = players[myID].lastUpdate == null ? Date.now() : players[myID].lastUpdate;
+		var then = worms[myID].lastUpdate == null ? Date.now() : worms[myID].lastUpdate;
 		var delta = (now - then) / 1000;
 
 		updateDestiny(state);
@@ -73,18 +66,17 @@ io.sockets.on('connection', function(socket) {
 		updatePosition(delta);
 		updateHeadRotation();
 
-		players[myID].lastUpdate = now;
-		players[myID].delta = delta;
+		worms[myID].lastUpdate = now;
 
-		var playerUpdated = players[myID];
+		var wormUpdated = worms[myID];
 
-		socket.emit('playerUpdated', { player: playerUpdated, itsMe: true });
-		socket.broadcast.emit('playerUpdated', { player: playerUpdated, itsMe: false });
+		socket.emit('wormUpdated', wormUpdated);
+		socket.broadcast.emit('otherWormUpdated', wormUpdated);
 	}
 
 	function onDisconnect(data) {
-		players.splice(myID, 1, null);
-		io.sockets.emit('playerDisconnect', myID);
+		worms.splice(myID, 1, null);
+		io.sockets.emit('otherWormDisconnect', myID);
 	}
 
 	/////////////////////////////////////////////////
@@ -104,7 +96,6 @@ io.sockets.on('connection', function(socket) {
 			var distanceBySum;                           ; 
 			var distanceBySub;
 
-			// calcula distancia entre theta y correcAngle, por suma y por resta
 			if(theta >= correctAngle) {
 				// -PI--------ca---|-----t-------PI //
 				distanceBySub = Math.abs(theta - correctAngle);
@@ -130,14 +121,13 @@ io.sockets.on('connection', function(socket) {
 	function updatePosition(delta) {
 		var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
 
-		players[myID].x = cartesianPosition.x;
-		players[myID].y = cartesianPosition.y;
+		worms[myID].moveTo(cartesianPosition.x, cartesianPosition.y);
 	}
 
 	function updateHeadRotation(delta) {
 		var angleRadians = polarVelocity.w;
 
-		players[myID].headRotation = angleRadians * (180 / Math.PI);
+		worms[myID].lookTo(angleRadians * (180 / Math.PI));
 	}
 
 	function mousePosition(state) {
@@ -145,7 +135,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function currentPosition() {
-		return Vector(players[myID].x, players[myID].y);
+		return Vector(worms[myID].x, worms[myID].y);
 	}
 
 	function currentVelocity(delta) {
