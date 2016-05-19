@@ -17,4 +17,8 @@ module.exports  = function Worm(id, nickname, x, y) {
 		this.headRotation = angle;
 	};
 
+	this.itsOtherWorm = function(otherWorm) {
+		return otherWorm != null ? otherWorm.id != worm.id : false;
+	};
+
 }

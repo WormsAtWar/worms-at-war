@@ -1,0 +1,80 @@
+
+// Worm Visual Representation
+/////////////////////////////
+var WormShape = function(stage, worm, offsetX, offsetY) {
+	createjs.Shape.call(this);
+	this.nickname;
+	this.create(stage, worm, offsetX, offsetY);
+};
+
+// Extends of Shape class
+WormShape.prototype = Object.create(createjs.Shape.prototype);
+WormShape.prototype.constructor = WormShape;
+
+WormShape.prototype.create = function(stage, worm, offsetX, offsetY) {
+	this.renderBody(stage, worm, offsetX, offsetY)
+	this.renderNickname(worm.nickname);
+};
+
+WormShape.prototype.renderBody = function(stage, worm, offsetX, offsetY) {
+	var positionX = offsetX != null ? offsetX : worm.x;
+	var positionY = offsetY != null ? offsetY : worm.y;
+
+	this.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
+	this.graphics.beginFill('green').drawCircle(positionX, positionY, 20);
+	this.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
+	this.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
+	this.graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
+	this.graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
+	this.rotation = worm.headRotation;
+
+	stage.addChild(this);
+};
+
+WormShape.prototype.renderNickname = function(nickname) {
+	this.nickname = new Text(nickname, "14px Arial", "#FFFFFF");
+	this.nickname.x = this.x;
+ 	this.nickname.y = this.y + 20;
+
+	this.stage.addChild(this.nickname);
+};
+
+WormShape.prototype.remove = function() {
+	this.stage.removeChild(this);
+	this.stage.removeChild(this.nickname);
+};
+
+WormShape.prototype.update = function(worm) {
+	this.moveTo(worm.x, worm.y);
+	this.lookTo(worm.headRotation);
+};
+
+WormShape.prototype.moveTo = function(x, y) {
+	this.x = x;
+	this.y = y;
+	this.nickname.x = x;
+	this.nickname.y = y + 20;
+};
+
+WormShape.prototype.lookTo = function(angle) {
+	this.rotation = angle;
+};
+/////////////////////////////
+
+
+// Food Visual Representation
+/////////////////////////////
+var FoodShape = function(stage, food) {
+	createjs.Shape.call(this);
+	this.create(stage, food);
+};
+
+// Extends of Shape class
+FoodShape.prototype = Object.create(createjs.Shape.prototype);
+FoodShape.prototype.constructor = FoodShape;
+
+FoodShape.prototype.create = function(stage, food) {
+	this.graphics.beginFill('red').drawCircle(food.x, food.y, 5);
+	stage.addChild(this);
+};
+/////////////////////////////
