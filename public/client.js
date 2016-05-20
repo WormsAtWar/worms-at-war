@@ -41,6 +41,7 @@ var IO = {
 
 	onOtherWormDisconnect : function(id) {
 		otherWorms.splice(id, 1, null);
+		Render.removeWorm(id);
 	}
 
 };
@@ -98,6 +99,11 @@ var Render = {
 	otherWormNotRendered : function(id) {
 		return Render.otherWorms[id] == null;
 	},
+
+	removeWorm : function(id) {
+		Render.otherWorms[id].remove();
+		Render.otherWorms.splice(id, 1, null);
+	},
 };
 
 function renderFrame() {
@@ -119,9 +125,6 @@ function renderOtherWorms() {
 		var otherWorm = otherWorms[id];
 		if(itsOtherWorm(otherWorm)) {
 			renderOtherWorm(otherWorm);
-		} else {
-			Render.otherWorms[id].remove();
-			Render.otherWorms[id] = null;
 		}
 	}
 }

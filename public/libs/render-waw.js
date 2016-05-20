@@ -40,8 +40,8 @@ WormShape.prototype.renderNickname = function(nickname) {
 };
 
 WormShape.prototype.remove = function() {
-	this.stage.removeChild(this);
 	this.stage.removeChild(this.nickname);
+	this.stage.removeChild(this);
 };
 
 WormShape.prototype.update = function(worm) {
