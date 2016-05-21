@@ -21,17 +21,31 @@ server.listen(process.env.PORT || 3000, function() {
 var wormID = 0;
 var worms = new Array();
 
-var foodMax = 20;
+var foodMax = 30;
+var foodCount = 0;
 var foods = new Array();
  
 createFood();
+setInterval(supplyFood, 3000);
 
 function createFood() {
 	for(id = 0; id < foodMax; id++) {
-		var randomX = Math.random() * 1000;
-		var randomY = Math.random() * 600;
-
+		var randomX = (Math.random() * 990) + 5;
+		var randomY = (Math.random() * 590) + 5;
 		foods[id] = new Food(id, randomX, randomY);
+		foodCount++;
+	}
+}
+
+function supplyFood() {
+	if(foodCount < foodMax) {
+		var randomX = (Math.random() * 990) + 5;
+		var randomY = (Math.random() * 590) + 5;
+		var food = new Food(foods.length, randomX, randomY);
+
+		foods[food.id] = food;
+		io.sockets.emit('suppliedFood', food);
+		foodCount++;
 	}
 }
 
@@ -155,6 +169,7 @@ io.sockets.on('connection', function(socket) {
 					worms[myID].eat(food);
 					io.sockets.emit('foodSwallowed', food.id);
 					foods.splice(food.id, 1, null);
+					foodCount--;
 				}
 			}
 		}

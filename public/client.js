@@ -19,6 +19,7 @@ var IO = {
 		IO.socket.on('newWormLogin', IO.onNewWormLogin);
 		IO.socket.on('wormUpdated', IO.onWormUpdated);
 		IO.socket.on('otherWormUpdated', IO.onOtherWormUpdated);
+		IO.socket.on('suppliedFood', IO.onSuppliedFood);
 		IO.socket.on('foodSwallowed', IO.onFoodSwallowed);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
@@ -40,6 +41,10 @@ var IO = {
 
 	onOtherWormUpdated : function(data) {
 		otherWorms[data.id] = data;
+	},
+
+	onSuppliedFood : function(data) {
+		foods[data.id] = data;
 	},
 
 	onFoodSwallowed : function(id) {
