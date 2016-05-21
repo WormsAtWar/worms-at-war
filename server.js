@@ -5,6 +5,7 @@ var io = require('socket.io')(server);
 var Vector = require('v2d');
 
 var Worm = require('./model/worm');
+var Food = require('./model/food');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -12,12 +13,27 @@ server.listen(process.env.PORT || 3000, function() {
 	console.log("Socket listening on port %d ", this.address().port);
 });
 
+
 /*------------------------------------------*/
 /*------------------ GAME ------------------*/
 /*------------------------------------------*/
 
 var wormID = 0;
 var worms = new Array();
+
+var foodMax = 20;
+var foods = new Array();
+ 
+createFood();
+
+function createFood() {
+	for(id = 0; id < foodMax; id++) {
+		var randomX = Math.random() * 1000;
+		var randomY = Math.random() * 600;
+
+		foods[id] = new Food(id, randomX, randomY);
+	}
+}
 
 io.sockets.on('connection', function(socket) {
 
@@ -33,7 +49,6 @@ io.sockets.on('connection', function(socket) {
 
 
 	//////////////// Events Handlers ////////////////
-
 	function bindEvents() {
 		socket.on('wormLogin', onWormLogin);
 		socket.on('wormUpdate', onWormUpdate);
@@ -46,7 +61,7 @@ io.sockets.on('connection', function(socket) {
 
 		myID = wormID;
 
-		socket.emit('loginSuccess', { worm: worm, otherWorms: worms });
+		socket.emit('loginSuccess', { worm: worm, otherWorms: worms, foods: foods });
 
 		worms[myID] = worm;
 
@@ -65,6 +80,7 @@ io.sockets.on('connection', function(socket) {
 		updateVelocity(delta);
 		updatePosition(delta);
 		updateHeadRotation();
+		detectCollisions();
 
 		worms[myID].lastUpdate = now;
 
@@ -78,7 +94,6 @@ io.sockets.on('connection', function(socket) {
 		worms.splice(myID, 1, null);
 		io.sockets.emit('otherWormDisconnect', myID);
 	}
-
 	/////////////////////////////////////////////////
 
 
@@ -122,12 +137,27 @@ io.sockets.on('connection', function(socket) {
 		var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
 
 		worms[myID].moveTo(cartesianPosition.x, cartesianPosition.y);
+		worms[myID].boundary.x = cartesianPosition.x;
+		worms[myID].boundary.y = cartesianPosition.y;
 	}
 
 	function updateHeadRotation(delta) {
 		var angleRadians = polarVelocity.w;
 
 		worms[myID].lookTo(angleRadians * (180 / Math.PI));
+	}
+
+	function detectCollisions() {
+		for(id in foods) {
+			var food = foods[id];
+			if(food != null) {
+				if(worms[myID].boundary.collide(food.boundary)) {
+					worms[myID].eat(food);
+					io.sockets.emit('foodSwallowed', food.id);
+					foods.splice(food.id, 1, null);
+				}
+			}
+		}
 	}
 
 	function mousePosition(state) {

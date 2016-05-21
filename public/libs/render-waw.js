@@ -77,4 +77,8 @@ FoodShape.prototype.create = function(stage, food) {
 	this.graphics.beginFill('red').drawCircle(food.x, food.y, 5);
 	stage.addChild(this);
 };
+
+FoodShape.prototype.remove = function() {
+	this.stage.removeChild(this);
+};
 /////////////////////////////

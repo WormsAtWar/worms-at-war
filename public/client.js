@@ -1,5 +1,6 @@
 var worm;
 var otherWorms = new Array();
+var foods = new Array();
 
 var status = 'waiting';
 
@@ -18,12 +19,14 @@ var IO = {
 		IO.socket.on('newWormLogin', IO.onNewWormLogin);
 		IO.socket.on('wormUpdated', IO.onWormUpdated);
 		IO.socket.on('otherWormUpdated', IO.onOtherWormUpdated);
+		IO.socket.on('foodSwallowed', IO.onFoodSwallowed);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
 	onLoginSuccess : function(data) {
 		worm = data.worm;
 		otherWorms = data.otherWorms;
+		foods = data.foods;
 		status = 'success';
 	},
 
@@ -37,6 +40,11 @@ var IO = {
 
 	onOtherWormUpdated : function(data) {
 		otherWorms[data.id] = data;
+	},
+
+	onFoodSwallowed : function(id) {
+		foods.splice(id, 1, null);
+		Render.removeFood(id);
 	},
 
 	onOtherWormDisconnect : function(id) {
@@ -92,6 +100,8 @@ var Render = {
 
 	otherWorms: new Array(),
 
+	foods: new Array(),
+
 	wormNotRendered : function() {
 		return Render.worm == null;
 	},
@@ -100,13 +110,23 @@ var Render = {
 		return Render.otherWorms[id] == null;
 	},
 
+	foodNotRendered : function(id) {
+		return Render.foods[id] == null;
+	},
+
 	removeWorm : function(id) {
 		Render.otherWorms[id].remove();
 		Render.otherWorms.splice(id, 1, null);
 	},
+
+	removeFood : function(id) {
+		Render.foods[id].remove();
+		Render.foods.splice(id, 1, null);
+	},
 };
 
 function renderFrame() {
+	renderFoods();
 	renderWorm();
 	renderOtherWorms();
 	stage.update();
@@ -140,8 +160,30 @@ function renderOtherWorm(otherWorm) {
 	}
 }
 
+function renderFoods() {
+	for(id in foods) {
+		var food = foods[id];
+		if(itsFood(food)) {
+			renderFood(food);
+		}
+	}
+}
+
+function renderFood(food) {
+	if(Render.foodNotRendered(food.id)) {
+		//var offsetX = worm.x == 0 ? worm.x : otherWorm.x;
+		//var offsetY = worm.y == 0 ? worm.y : otherWorm.y;
+
+		Render.foods[food.id] = new FoodShape(stage, food/*, offsetX, offsetY*/);
+	}
+}
+
 function itsOtherWorm(otherWorm) {
 	return otherWorm != null ? otherWorm.id != worm.id : false;
+}
+
+function itsFood(food) {
+	return food != null;
 }
 
 function renderGame() {
