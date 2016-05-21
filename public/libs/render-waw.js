@@ -82,3 +82,30 @@ FoodShape.prototype.remove = function() {
 	this.stage.removeChild(this);
 };
 /////////////////////////////
+
+
+// Score Visual Representation
+/////////////////////////////
+var ScoreText = function(stage, worm) {
+	createjs.Text.call(this);
+	this.create(stage, worm);
+};
+
+// Extends of Text class
+ScoreText.prototype = Object.create(createjs.Text.prototype);
+ScoreText.prototype.constructor = ScoreText;
+
+ScoreText.prototype.create = function(stage, worm) {
+	this.text = worm.score;
+	this.font = "bold 24px Arial";
+	this.color = 'blue';
+	this.x = 20;
+ 	this.y = 20;
+	stage.addChild(this);
+};
+
+ScoreText.prototype.update = function(worm) {
+	this.text = worm.score;
+};
+/////////////////////////////
+

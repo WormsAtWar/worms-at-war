@@ -102,6 +102,8 @@ var Render = {
 
 	foods: new Array(),
 
+	score: null,
+
 	wormNotRendered : function() {
 		return Render.worm == null;
 	},
@@ -112,6 +114,10 @@ var Render = {
 
 	foodNotRendered : function(id) {
 		return Render.foods[id] == null;
+	},
+
+	scoreNotRendered : function() {
+		return Render.score == null;
 	},
 
 	removeWorm : function(id) {
@@ -129,6 +135,7 @@ function renderFrame() {
 	renderFoods();
 	renderWorm();
 	renderOtherWorms();
+	renderScore();
 	stage.update();
 }
 
@@ -171,10 +178,15 @@ function renderFoods() {
 
 function renderFood(food) {
 	if(Render.foodNotRendered(food.id)) {
-		//var offsetX = worm.x == 0 ? worm.x : otherWorm.x;
-		//var offsetY = worm.y == 0 ? worm.y : otherWorm.y;
+		Render.foods[food.id] = new FoodShape(stage, food);
+	}
+}
 
-		Render.foods[food.id] = new FoodShape(stage, food/*, offsetX, offsetY*/);
+function renderScore() {
+	if(Render.scoreNotRendered()) {
+		Render.score = new ScoreText(stage, worm);
+	} else {
+		Render.score.update(worm);
 	}
 }
 
