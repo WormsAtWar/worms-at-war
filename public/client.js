@@ -1,6 +1,7 @@
 var worm;
 var otherWorms = new Array();
 var foods = new Array();
+var leader;
 
 var status = 'waiting';
 
@@ -21,6 +22,7 @@ var IO = {
 		IO.socket.on('otherWormUpdated', IO.onOtherWormUpdated);
 		IO.socket.on('suppliedFood', IO.onSuppliedFood);
 		IO.socket.on('foodSwallowed', IO.onFoodSwallowed);
+		IO.socket.on('updateLeader', IO.onUpdateLeader);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
@@ -50,6 +52,10 @@ var IO = {
 	onFoodSwallowed : function(id) {
 		foods.splice(id, 1, null);
 		Render.removeFood(id);
+	},
+
+	onUpdateLeader : function(data) {
+		leader = data;
 	},
 
 	onOtherWormDisconnect : function(id) {
@@ -109,6 +115,8 @@ var Render = {
 
 	score: null,
 
+	leader: null,
+
 	wormNotRendered : function() {
 		return Render.worm == null;
 	},
@@ -123,6 +131,10 @@ var Render = {
 
 	scoreNotRendered : function() {
 		return Render.score == null;
+	},
+
+	leaderNotRendered : function() {
+		return Render.leader == null;
 	},
 
 	removeWorm : function(id) {
@@ -141,6 +153,7 @@ function renderFrame() {
 	renderWorm();
 	renderOtherWorms();
 	renderScore();
+	renderLeader();
 	stage.update();
 }
 
@@ -192,6 +205,16 @@ function renderScore() {
 		Render.score = new ScoreText(stage, worm);
 	} else {
 		Render.score.update(worm);
+	}
+}
+
+function renderLeader() {
+	if(Render.leaderNotRendered()) {
+		if(leader != null) {
+			Render.leader = new LeaderText(stage, leader);
+		}
+	} else {
+		Render.leader.update(leader);
 	}
 }
 

@@ -87,7 +87,7 @@ FoodShape.prototype.remove = function() {
 
 
 // Score Visual Representation
-/////////////////////////////
+//////////////////////////////
 var ScoreText = function(stage, worm) {
 	createjs.Text.call(this);
 	this.create(stage, worm);
@@ -111,3 +111,28 @@ ScoreText.prototype.update = function(worm) {
 };
 /////////////////////////////
 
+
+// Leader Visual Representation
+//////////////////////////////
+var LeaderText = function(stage, leader) {
+	createjs.Text.call(this);
+	this.create(stage, leader);
+};
+
+// Extends of Text class
+LeaderText.prototype = Object.create(createjs.Text.prototype);
+LeaderText.prototype.constructor = LeaderText;
+
+LeaderText.prototype.create = function(stage, leader) {
+	this.text = leader.nickname + " - " + leader.score;
+	this.font = 'bold 12px Arial';
+	this.color = 'yellow';
+	this.x = 800;
+ 	this.y = 20;
+	stage.addChild(this);
+};
+
+LeaderText.prototype.update = function(leader) {
+	this.text = leader.nickname + " - " + leader.score;
+};
+/////////////////////////////

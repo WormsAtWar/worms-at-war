@@ -49,6 +49,32 @@ function supplyFood() {
 	}
 }
 
+setInterval(updateLeader, 5000);
+
+function updateLeader() {
+	var leader = getLeader();
+	io.sockets.emit('updateLeader', leader);
+}
+
+function getLeader() {
+	var leader;
+
+	for(id in worms) {
+		var eachWorm = worms[id];
+		if(eachWorm != null) {
+			if(leader != null) {
+			    if(eachWorm.score > leader.score) {
+			    	leader = eachWorm;
+			    }
+			} else {
+				leader = eachWorm;
+			}
+		}
+	}
+
+	return leader;
+}
+
 io.sockets.on('connection', function(socket) {
 
 	bindEvents();
