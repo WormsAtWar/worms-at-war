@@ -1,11 +1,13 @@
 var CircularBoundary = require('./circular-boundary');
 
-module.exports = function Food(id, x, y, points) {
+var availablePoints = [5, 10, 15, 20];
+
+module.exports = function Food(id, x, y) {
 
 	this.id = id;
 	this.x = x;
 	this.y = y;
-	this.points = points || 10;
+	this.points = availablePoints[Math.floor(Math.random() * availablePoints.length)];
 	this.boundary = new CircularBoundary(this.x, this.y, 5);
 	
 }

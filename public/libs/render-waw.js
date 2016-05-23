@@ -74,7 +74,7 @@ FoodShape.prototype = Object.create(createjs.Shape.prototype);
 FoodShape.prototype.constructor = FoodShape;
 
 FoodShape.prototype.create = function(stage, food) {
-	this.graphics.beginFill('red').drawCircle(food.x, food.y, 5);
+	this.graphics.beginFill('red').drawCircle(food.x, food.y, food.points / 2);
 	this.alpha = 0;
 	stage.addChild(this);
 	createjs.Tween.get(this).to({ alpha: 1 }, 1000);
