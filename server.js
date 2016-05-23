@@ -92,6 +92,8 @@ io.sockets.on('connection', function(socket) {
 	function bindEvents() {
 		socket.on('wormLogin', onWormLogin);
 		socket.on('wormUpdate', onWormUpdate);
+		socket.on('speedUp', onSpeedUp);
+		socket.on('slowDown', onSlowDown);
 		socket.on('disconnect', onDisconnect);
 	}
 
@@ -130,12 +132,23 @@ io.sockets.on('connection', function(socket) {
 		socket.broadcast.emit('otherWormUpdated', wormUpdated);
 	}
 
+	function onSpeedUp(data) {
+		console.log('speed');
+		polarVelocity = {r: 180, w: polarVelocity.w}; // speed * 1.8
+		angularVelocity -= angularVelocity / 4; // less mobility on turns
+	}
+
+	function onSlowDown(data) {
+		console.log('slow');
+		polarVelocity = {r: 100, w: polarVelocity.w};
+		angularVelocity = Math.PI * 1;
+	}
+
 	function onDisconnect(data) {
 		worms.splice(myID, 1, null);
 		io.sockets.emit('otherWormDisconnect', myID);
 	}
 	/////////////////////////////////////////////////
-
 
 
 	function updateDestiny(state) {

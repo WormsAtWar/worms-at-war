@@ -82,6 +82,14 @@ var Tween = createjs.Tween;
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
+stage.addEventListener('stagemousedown', function() {
+	IO.socket.emit('speedUp', null);
+});
+
+stage.addEventListener('stagemouseup', function() {
+	IO.socket.emit('slowDown', null);
+});
+
 Ticker.setFPS(60);
 
 /////////////////////////////
