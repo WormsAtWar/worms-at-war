@@ -33,8 +33,10 @@ WormShape.prototype.renderBody = function(stage, worm, offsetX, offsetY) {
 
 WormShape.prototype.renderNickname = function(nickname) {
 	this.nickname = new Text(nickname, "14px Arial", "#FFFFFF");
+	this.nickname.regX = this.nickname.getMeasuredWidth() / 2;
+	this.nickname.regY = -20;
 	this.nickname.x = this.x;
- 	this.nickname.y = this.y + 20;
+ 	this.nickname.y = this.y;
 
 	this.stage.addChild(this.nickname);
 };
@@ -53,7 +55,7 @@ WormShape.prototype.moveTo = function(x, y) {
 	this.x = x;
 	this.y = y;
 	this.nickname.x = x;
-	this.nickname.y = y + 20;
+	this.nickname.y = y;
 };
 
 WormShape.prototype.lookTo = function(angle) {
