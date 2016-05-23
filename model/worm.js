@@ -1,6 +1,8 @@
+var color = require('randomcolor');
+
 var CircularBoundary = require('./circular-boundary');
 
-module.exports = function Worm(id, nickname, x, y) {
+module.exports = function Worm(id, nickname, x, y, nickColor) {
 
 	this.id = id;
 	this.nickname = nickname == null ? '' : nickname;
@@ -9,6 +11,7 @@ module.exports = function Worm(id, nickname, x, y) {
 	this.score = 0;
 	this.boundary = new CircularBoundary(this.x, this.y, 20);
 	this.headRotation = 0;
+	this.color = color.randomColor({ luminosity: 'dark' });
 	this.lastUpdate = null;
 
 	this.moveTo = function(x, y) {

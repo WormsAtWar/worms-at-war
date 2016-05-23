@@ -21,7 +21,7 @@ WormShape.prototype.renderBody = function(stage, worm, offsetX, offsetY) {
 	var positionY = offsetY != null ? offsetY : worm.y;
 
 	this.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
-	this.graphics.beginFill('green').drawCircle(positionX, positionY, 20);
+	this.graphics.beginFill(worm.color).drawCircle(positionX, positionY, 20);
 	this.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
 	this.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
 	this.graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
