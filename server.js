@@ -150,6 +150,7 @@ io.sockets.on('connection', function(socket) {
 
 
 	function updateDestiny(state) {
+		console.log(state);
 		destinyDirection = Vector.unit(Vector.dif(mousePosition(state), currentPosition()));
 	}
 
