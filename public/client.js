@@ -82,6 +82,8 @@ var Tween = createjs.Tween;
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
+stage.snapToPixelEnabled = true;
+
 stage.addEventListener('stagemousedown', function() {
 	IO.socket.emit('speedUp', null);
 });
@@ -184,10 +186,7 @@ function renderOtherWorms() {
 
 function renderOtherWorm(otherWorm) {
 	if(Render.otherWormNotRendered(otherWorm.id)) {
-		var offsetX = worm.x == 0 ? worm.x : otherWorm.x;
-		var offsetY = worm.y == 0 ? worm.y : otherWorm.y;
-
-		Render.otherWorms[otherWorm.id] = new WormShape(stage, otherWorm, offsetX, offsetY);
+		Render.otherWorms[otherWorm.id] = new WormShape(stage, otherWorm);
 	} else {
 		Render.otherWorms[otherWorm.id].update(otherWorm);
 	}

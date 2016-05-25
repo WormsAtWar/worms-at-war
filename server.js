@@ -99,7 +99,7 @@ io.sockets.on('connection', function(socket) {
 
 
 	function onWormLogin(nickname) {
-		var worm = new Worm(wormID, nickname, 0, 0);
+		var worm = new Worm(wormID, nickname);
 
 		myID = wormID;
 
@@ -133,13 +133,11 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onSpeedUp(data) {
-		console.log('speed');
 		polarVelocity = {r: 180, w: polarVelocity.w}; // speed * 1.8
 		angularVelocity -= angularVelocity / 4; // less mobility on turns
 	}
 
 	function onSlowDown(data) {
-		console.log('slow');
 		polarVelocity = {r: 100, w: polarVelocity.w};
 		angularVelocity = Math.PI * 1;
 	}
@@ -188,10 +186,8 @@ io.sockets.on('connection', function(socket) {
 
 	function updatePosition(delta) {
 		var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
-
 		worms[myID].moveTo(cartesianPosition.x, cartesianPosition.y);
-		worms[myID].boundary.x = cartesianPosition.x;
-		worms[myID].boundary.y = cartesianPosition.y;
+		//worms[myID].moveTo(currentVelocity(delta));
 	}
 
 	function updateHeadRotation(delta) {
@@ -204,7 +200,7 @@ io.sockets.on('connection', function(socket) {
 		for(id in foods) {
 			var food = foods[id];
 			if(food != null) {
-				if(worms[myID].boundary.collide(food.boundary)) {
+				if(worms[myID].collideFood(food)) {
 					worms[myID].eat(food);
 					io.sockets.emit('foodSwallowed', food.id);
 					foods.splice(food.id, 1, null);
@@ -219,7 +215,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function currentPosition() {
-		return Vector(worms[myID].x, worms[myID].y);
+		return Vector(worms[myID].segments[0].x, worms[myID].segments[0].y);
 	}
 
 	function currentVelocity(delta) {

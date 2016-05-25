@@ -1,30 +1,131 @@
 var color = require('randomcolor');
+var Vector = require('v2d');
 
 var CircularBoundary = require('./circular-boundary');
 
-module.exports = function Worm(id, nickname, x, y, nickColor) {
+module.exports = function Worm(id, nickname) {
 
 	this.id = id;
 	this.nickname = nickname == null ? '' : nickname;
-	this.x = x;
-	this.y = y;
 	this.score = 0;
-	this.boundary = new CircularBoundary(this.x, this.y, 20);
-	this.headRotation = 0;
-	this.color = color.randomColor({ luminosity: 'dark' });
+	this.segments = new Array();
+	this.color = color.randomColor();
 	this.lastUpdate = null;
 
+
+	this.head = function() {
+		return this.segments[0];
+	};
+
+	this.generateHead = function(id) {
+		var randomX = Math.random() * 990 + 5;
+		var randomY = Math.random() * 590 + 5;
+		this.segments[0] = new WormHead(id, randomX, randomY);
+	};
+
+	this.generateBody = function() {
+		for(i = 1; i < 20; i++) {
+			this.segments[i] = new WormSegment(id, this.segments[i-1]);
+		}
+	};
+
+	this.generateHead(id);
+	this.generateBody();
+
 	this.moveTo = function(x, y) {
-		this.x = x;
-		this.y = y;
+		for(i = this.segments.length - 1; i > 0; i--) {
+			this.segments[i].moveTo(this.segments[i-1]);
+		}
+		this.head().moveTo(x, y);
 	};
 
 	this.lookTo = function(angle) {
-		this.headRotation = angle;
+		this.head().lookTo(angle);
 	};
 
 	this.eat = function(food) {
 		this.score += food.points;
+	};
+
+	this.collideFood = function(food) {
+		return this.head().collide(food);
+	};
+
+	this.collideHeadToBody = function(otherWorm) {
+		var collision = this.head().collide(otherWorm.head);
+		
+		if(!collision) {
+			for(i = 1; i < otherWorm.segments.length; i++) {
+				collision = collision || (this.head().collide(otherWorm.body[i]) && this.id != otherWorm.id);
+			}
+		}
+
+		return collision;
+	};
+
+};
+
+
+function WormHead(id, x, y) {
+
+	this.id = id;
+	this.x = x;
+	this.y = y;
+	this.rotation = 0;
+	this.boundary = new CircularBoundary(this.x, this.y, 20);
+
+
+	this.vectorizedPosition = function() {
+		return Vector(this.x, this.y);
+	};
+
+	this.collide = function(collisionable) {
+		return this.boundary.collide(collisionable.boundary);
+	};
+
+	this.updateBoundary = function() {
+		this.boundary.x = this.x;
+		this.boundary.y = this.y;
+	};
+
+	this.lookTo = function(angle) {
+		this.rotation = angle;
+	};
+	
+	this.moveTo = function(x, y) {
+		this.x = x;
+		this.y = y;
+		this.updateBoundary();
+	};
+
+}
+
+
+function WormSegment(id, next) {
+
+	this.id = id;
+	this.x = next.x;
+	this.y = next.y;
+	this.boundary = new CircularBoundary(this.x, this.y, 20);
+
+
+	this.vectorizedPosition = function() {
+		return Vector(this.x, this.y);
+	};
+
+	this.collide = function(collisionable) {
+		return this.boundary.collide(collisionable);
+	};
+
+	this.updateBoundary = function() {
+		this.boundary.x = this.x;
+		this.boundary.y = this.y;
+	};
+
+	this.moveTo = function(next) {
+		this.x = next.x;
+		this.y = next.y;
+		this.updateBoundary();
 	};
 
 }
