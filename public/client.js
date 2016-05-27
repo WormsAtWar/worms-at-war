@@ -24,6 +24,7 @@ var IO = {
 		IO.socket.on('otherWormUpdated', IO.onOtherWormUpdated);
 		IO.socket.on('suppliedFood', IO.onSuppliedFood);
 		IO.socket.on('foodSwallowed', IO.onFoodSwallowed);
+		IO.socket.on('dead', IO.onDead);
 		IO.socket.on('updateLeader', IO.onUpdateLeader);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
@@ -56,6 +57,10 @@ var IO = {
 		Render.removeFood(id);
 	},
 
+	onDead : function(data) {
+		window.location.reload();
+	},
+
 	onUpdateLeader : function(data) {
 		Model.leader = data;
 	},
@@ -74,6 +79,8 @@ var IO = {
 
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
+
+createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
 
 stage.addEventListener('stagemousedown', function() {
 	IO.socket.emit('speedUp', null);

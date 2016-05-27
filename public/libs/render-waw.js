@@ -17,6 +17,7 @@ var RenderEngine = function(stage) {
 	this.foods = new Array();
 	this.score;
 	this.leader;
+	this.fps;
 
 	this.stage = stage;
 
@@ -42,6 +43,7 @@ RenderEngine.prototype.renderFrame = function() {
 	this.renderFoods();
 	this.renderScore();
 	this.renderLeader();
+	this.renderFPS();
 	this.stage.update();
 }
 
@@ -101,6 +103,19 @@ RenderEngine.prototype.renderLeader = function() {
 	}
 };
 
+RenderEngine.prototype.renderFPS = function() {
+	if(this.fps == null) {
+		this.fps = new Text(Math.round(Ticker.getMeasuredFPS()) + " fps", '14px Arial', '#FFFFFF');
+		this.fps.set({
+			x: 20,
+			y: 570
+		});
+		this.hudContainer.addChild(this.fps);
+	} else {
+		this.fps.text = Math.round(Ticker.getMeasuredFPS()) + " fps"; 
+	}
+};
+
 RenderEngine.prototype.wormNotRendered = function() {
 	return this.worm == null;
 };
@@ -134,21 +149,13 @@ RenderEngine.prototype.showGameStage = function() {
 	$("#start").css("display", "none");
 	$("#game").fadeIn();
 };
-
-
-
-
-
-
-
-
 /////////////////////////////
 
 
 // Worm Visual Representation
 /////////////////////////////
 var WormShape = function(container, worm) {
-	createjs.Shape.call(this);
+	Shape.call(this);
 
 	this.color = worm.color;
 	this.bodySegments = new Array();
@@ -158,7 +165,7 @@ var WormShape = function(container, worm) {
 };
 
 // Extends of Shape class
-WormShape.prototype = Object.create(createjs.Shape.prototype);
+WormShape.prototype = Object.create(Shape.prototype);
 WormShape.prototype.constructor = WormShape;
 
 WormShape.prototype.create = function(container, worm) {
@@ -176,29 +183,39 @@ WormShape.prototype.renderBody = function(container, worm) {
 WormShape.prototype.renderBodySegment = function(container, index, segment) {
 	this.bodySegments[index] = new Shape();
 	this.bodySegments[index].graphics.beginFill(this.color).drawCircle(0, 0, 20);
-	this.bodySegments[index].set({ x: segment.x, y: segment.y });
+	this.bodySegments[index].set({ 
+		x: segment.x, 
+		y: segment.y, 
+	});
+	
 	container.addChild(this.bodySegments[index]);
 };
 
 WormShape.prototype.renderHead = function(container, head) {
 	this.graphics.beginFill(this.color).drawCircle(0, 0, 20);
-	this.graphics.setStrokeStyle(2,"square").beginStroke("#000000");
-	this.graphics.beginFill("white").drawCircle(5, -8, 8); //ojo izquierdo
-	this.graphics.beginFill("white").drawCircle(5, 8, 8); //ojo derecho
-	this.graphics.beginFill("black").drawCircle(9, -8, 2); //pupila izquierda
-	this.graphics.beginFill("black").drawCircle(9, 8, 2); //pupila derecha
-	this.set({ x: head.x, y: head.y });
-	this.rotation = head.rotation;
+	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
+	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
+	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
+	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
+	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
+	this.set({ 
+		x: head.x, 
+		y: head.y, 
+		rotation:head.rotation, 
+	});
 
 	container.addChild(this);
 };
 
 WormShape.prototype.renderNickname = function(nickname) {
-	this.nickname = new Text(nickname, "14px Arial", "#FFFFFF");
-	this.nickname.regX = this.nickname.getMeasuredWidth() / 2;
-	this.nickname.regY = -20;
-	this.nickname.x = this.x;
- 	this.nickname.y = this.y;
+	this.nickname = new Text(nickname, '14px Arial', '#FFFFFF');
+	this.nickname.set({
+		regX: this.nickname.getMeasuredWidth() / 2,
+		regY: -20,
+		x: this.x,
+		y: this.y,
+	});
+
 	this.parent.addChild(this.nickname);
 };
 
@@ -238,18 +255,20 @@ WormShape.prototype.lookTo = function(angle) {
 // Food Visual Representation
 /////////////////////////////
 var FoodShape = function(container, food) {
-	createjs.Shape.call(this);
+	Shape.call(this);
 	this.create(container, food);
 };
 
 // Extends of Shape class
-FoodShape.prototype = Object.create(createjs.Shape.prototype);
+FoodShape.prototype = Object.create(Shape.prototype);
 FoodShape.prototype.constructor = FoodShape;
 
 FoodShape.prototype.create = function(container, food) {
 	this.graphics.beginFill('red').drawCircle(food.x, food.y, food.points / 2);
-	this.alpha = 0;
+	this.set({ alpha: 0 });
+
 	container.addChild(this);
+	
 	Tween.get(this).to({ alpha: 1 }, 1000);
 };
 
@@ -262,12 +281,12 @@ FoodShape.prototype.remove = function() {
 // Score Visual Representation
 //////////////////////////////
 var ScoreText = function(container, worm) {
-	createjs.Text.call(this);
+	Text.call(this);
 	this.create(container, worm);
 };
 
 // Extends of Text class
-ScoreText.prototype = Object.create(createjs.Text.prototype);
+ScoreText.prototype = Object.create(Text.prototype);
 ScoreText.prototype.constructor = ScoreText;
 
 ScoreText.prototype.create = function(container, worm) {
@@ -288,20 +307,23 @@ ScoreText.prototype.update = function(worm) {
 // Leader Visual Representation
 //////////////////////////////
 var LeaderText = function(container, leader) {
-	createjs.Text.call(this);
+	Text.call(this);
 	this.create(container, leader);
 };
 
 // Extends of Text class
-LeaderText.prototype = Object.create(createjs.Text.prototype);
+LeaderText.prototype = Object.create(Text.prototype);
 LeaderText.prototype.constructor = LeaderText;
 
 LeaderText.prototype.create = function(container, leader) {
-	this.text = leader.nickname + " - " + leader.score;
-	this.font = 'bold 12px Arial';
-	this.color = 'yellow';
-	this.x = 850;
- 	this.y = 20;
+	this.set({
+		text: leader.nickname + " - " + leader.score,
+		font: 'bold 12px Arial',
+		color: 'yellow',
+		x: 850,
+		y: 20,
+	});
+
 	container.addChild(this);
 };
 

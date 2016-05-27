@@ -17,19 +17,19 @@ module.exports = function Worm(id, nickname) {
 		return this.segments[0];
 	};
 
-	this.generateHead = function(id) {
+	this.generateHead = function() {
 		var randomX = Math.random() * 990 + 5;
 		var randomY = Math.random() * 590 + 5;
-		this.segments[0] = new WormHead(id, randomX, randomY);
+		this.segments[0] = new WormHead(randomX, randomY);
 	};
 
 	this.generateBody = function() {
 		for(i = 1; i < 20; i++) {
-			this.segments[i] = new WormSegment(id, this.segments[i-1]);
+			this.segments[i] = new WormSegment(this.segments[i-1]);
 		}
 	};
 
-	this.generateHead(id);
+	this.generateHead();
 	this.generateBody();
 
 	this.moveTo = function(x, y) {
@@ -52,32 +52,29 @@ module.exports = function Worm(id, nickname) {
 	};
 
 	this.collideHeadToBody = function(otherWorm) {
-		var collision = this.head().collide(otherWorm.head);
-		
-		if(!collision) {
-			for(i = 1; i < otherWorm.segments.length; i++) {
-				collision = collision || (this.head().collide(otherWorm.body[i]) && this.id != otherWorm.id);
+		if(this.id != otherWorm.id) {
+			var collision = this.head().collide(otherWorm.head());
+			if(!collision) {
+				for(i = 1; i < otherWorm.segments.length; i++) {
+					collision = collision || (this.head().collide(otherWorm.segments[i]));
+				}
 			}
+			return collision;
+		} else {
+			return false;
 		}
-
-		return collision;
 	};
 
 };
 
 
-function WormHead(id, x, y) {
+function WormHead(x, y) {
 
-	this.id = id;
 	this.x = x;
 	this.y = y;
 	this.rotation = 0;
 	this.boundary = new CircularBoundary(this.x, this.y, 20);
 
-
-	this.vectorizedPosition = function() {
-		return Vector(this.x, this.y);
-	};
 
 	this.collide = function(collisionable) {
 		return this.boundary.collide(collisionable.boundary);
@@ -101,17 +98,12 @@ function WormHead(id, x, y) {
 }
 
 
-function WormSegment(id, next) {
+function WormSegment(next) {
 
-	this.id = id;
 	this.x = next.x;
 	this.y = next.y;
 	this.boundary = new CircularBoundary(this.x, this.y, 20);
 
-
-	this.vectorizedPosition = function() {
-		return Vector(this.x, this.y);
-	};
 
 	this.collide = function(collisionable) {
 		return this.boundary.collide(collisionable);

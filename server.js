@@ -150,7 +150,6 @@ io.sockets.on('connection', function(socket) {
 
 
 	function updateDestiny(state) {
-		console.log(state);
 		destinyDirection = Vector.unit(Vector.dif(mousePosition(state), currentPosition()));
 	}
 
@@ -188,7 +187,6 @@ io.sockets.on('connection', function(socket) {
 	function updatePosition(delta) {
 		var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
 		worms[myID].moveTo(cartesianPosition.x, cartesianPosition.y);
-		//worms[myID].moveTo(currentVelocity(delta));
 	}
 
 	function updateHeadRotation(delta) {
@@ -198,6 +196,11 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function detectCollisions() {
+		detectFoodCollisions();
+		detectWormsCollisions();
+	}
+
+	function detectFoodCollisions() {
 		for(id in foods) {
 			var food = foods[id];
 			if(food != null) {
@@ -206,6 +209,18 @@ io.sockets.on('connection', function(socket) {
 					io.sockets.emit('foodSwallowed', food.id);
 					foods.splice(food.id, 1, null);
 					foodCount--;
+				}
+			}
+		}
+	}
+
+	function detectWormsCollisions() {
+		for(id in worms) {
+			var worm = worms[id];
+			if(worm != null) {
+				if(worms[myID].collideHeadToBody(worm)) {
+					console.log("worm " + worms[myID].nickname + " is death :(");
+					socket.emit("dead", null);
 				}
 			}
 		}
