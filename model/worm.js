@@ -53,7 +53,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.collideHeadToBody = function(otherWorm) {
 		if(this.id != otherWorm.id) {
-			var collision = this.head().collide(otherWorm.head());
+			var collision = this.head().collide(otherWorm.head()) && this.score < otherWorm.score;
 			if(!collision) {
 				for(i = 1; i < otherWorm.segments.length; i++) {
 					collision = collision || (this.head().collide(otherWorm.segments[i]));
