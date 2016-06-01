@@ -89,6 +89,10 @@ function WormHead(x, y) {
 		this.rotation = angle;
 	};
 	
+	this.vectorizedPosition = function() {
+		return Vector(this.x, this.y);
+	}
+
 	this.moveTo = function(x, y) {
 		this.x = x;
 		this.y = y;
@@ -113,6 +117,10 @@ function WormSegment(next) {
 		this.boundary.x = this.x;
 		this.boundary.y = this.y;
 	};
+
+	this.vectorizedPosition = function() {
+		return Vector(this.x, this.y);
+	}
 
 	this.moveTo = function(next) {
 		this.x = next.x;

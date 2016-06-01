@@ -80,7 +80,7 @@ var IO = {
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
-createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+createjs.Ticker.timingMode = Ticker.TIMEOUT;
 
 stage.addEventListener('stagemousedown', function() {
 	IO.socket.emit('speedUp', null);
@@ -93,27 +93,34 @@ stage.addEventListener('stagemouseup', function() {
 var Render = new RenderEngine(stage);
 
 Ticker.setFPS(60);
+var frame = 1;
 
 /////////////////////////////
 //-------------------------//
-//        GAME LOOP        //
+//       CLIENT LOOP       //
 //-------------------------//
 /////////////////////////////
 Ticker.addEventListener('tick', function(event) {
 	if(status == 'success') {
-		update();
 		Render.renderFrame();
+		if(frame == 15) { // destiny update rate limited to 4 times per second
+			destinyUpdate();
+			frame = 1;
+		} else {
+			frame++;
+		}
 	}
 });
+
 /////////////////////////////
 /////////////////////////////
 
-function update() {
+function destinyUpdate() {
 	var state = {
 		mouseX: stage.mouseX,
 		mouseY: stage.mouseY
 	};
-	IO.socket.emit('wormUpdate', state);
+	IO.socket.emit('destinyUpdate', state);
 }
 
 

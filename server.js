@@ -88,10 +88,31 @@ io.sockets.on('connection', function(socket) {
 	////////////////////////////////////////////////
 
 
+	var gameLoopID;
+
+	function gameLoop() {
+		var now = Date.now();
+		var then = worms[myID].lastUpdate == null ? Date.now() : worms[myID].lastUpdate;
+		var delta = (now - then) / 1000;
+
+		updateVelocity(delta);
+		updatePosition(delta);
+		updateHeadRotation();
+		detectCollisions();
+
+		worms[myID].lastUpdate = now;
+
+		var wormUpdated = worms[myID];
+
+		socket.emit('wormUpdated', wormUpdated);
+		socket.broadcast.emit('otherWormUpdated', wormUpdated);
+	}
+
+
 	//////////////// Events Handlers ////////////////
 	function bindEvents() {
 		socket.on('wormLogin', onWormLogin);
-		socket.on('wormUpdate', onWormUpdate);
+		socket.on('destinyUpdate', onDestinyUpdate);
 		socket.on('speedUp', onSpeedUp);
 		socket.on('slowDown', onSlowDown);
 		socket.on('disconnect', onDisconnect);
@@ -110,26 +131,12 @@ io.sockets.on('connection', function(socket) {
 		socket.broadcast.emit('newWormLogin', worms[myID]);
 
 		wormID++;
+
+		gameLoopID = setInterval(gameLoop, 1000/60);
 	}
 
-
-	function onWormUpdate(state) {
-		var now = Date.now();
-		var then = worms[myID].lastUpdate == null ? Date.now() : worms[myID].lastUpdate;
-		var delta = (now - then) / 1000;
-
+	function onDestinyUpdate(state) {
 		updateDestiny(state);
-		updateVelocity(delta);
-		updatePosition(delta);
-		updateHeadRotation();
-		detectCollisions();
-
-		worms[myID].lastUpdate = now;
-
-		var wormUpdated = worms[myID];
-
-		socket.emit('wormUpdated', wormUpdated);
-		socket.broadcast.emit('otherWormUpdated', wormUpdated);
 	}
 
 	function onSpeedUp(data) {
@@ -143,6 +150,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onDisconnect(data) {
+		clearInterval(gameLoopID);
 		worms.splice(myID, 1, null);
 		io.sockets.emit('otherWormDisconnect', myID);
 	}
