@@ -7,6 +7,8 @@ module.exports = function Worm(id, nickname) {
 
 	this.id = id;
 	this.nickname = nickname == null ? '' : nickname;
+	this.x;
+	this.y;
 	this.score = 0;
 	this.segments = new Array();
 	this.color = color.randomColor();
@@ -21,6 +23,8 @@ module.exports = function Worm(id, nickname) {
 		var randomX = Math.random() * 3980 + 10;
 		var randomY = Math.random() * 3980 + 10;
 		this.segments[0] = new WormHead(randomX, randomY);
+		this.x = randomX;
+		this.y = randomY;
 	};
 
 	this.generateBody = function() {
@@ -37,6 +41,8 @@ module.exports = function Worm(id, nickname) {
 			this.segments[i].moveTo(this.segments[i-1]);
 		}
 		this.head().moveTo(x, y);
+		this.x = x;
+		this.y = y;
 	};
 
 	this.lookTo = function(angle) {

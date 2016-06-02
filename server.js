@@ -149,7 +149,6 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onDisconnect(data) {
-		clearInterval(gameLoopID);
 		worms.splice(myID, 1, null);
 		io.sockets.emit('otherWormDisconnect', myID);
 	}
@@ -226,8 +225,8 @@ io.sockets.on('connection', function(socket) {
 			var worm = worms[id];
 			if(worm != null) {
 				if(worms[myID].collideHeadToBody(worm)) {
-					console.log("worm " + worms[myID].nickname + " is death :(");
 					socket.emit("dead", null);
+					clearInterval(gameLoopID);
 				}
 			}
 		}
@@ -238,7 +237,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function currentPosition() {
-		return Vector(worms[myID].segments[0].x, worms[myID].segments[0].y);
+		return Vector(worms[myID].x, worms[myID].y);
 	}
 
 	function centeredPosition() {

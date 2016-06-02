@@ -15,6 +15,7 @@ var RenderEngine = function(stage) {
 	this.worm;
 	this.otherWorms = new Array();
 	this.foods = new Array();
+	this.minimap;
 	this.score;
 	this.leader;
 	this.fps;
@@ -26,42 +27,45 @@ var RenderEngine = function(stage) {
 
 RenderEngine.prototype.initContainers = function() {
 	this.worldContainer = new Container();
-	this.worldContainer.regX = -500;
-	this.worldContainer.regY = -300;
-
 	this.foodContainer = new Container();
 	this.otherWormsContainer = new Container();
 	this.wormContainer = new Container();
+	this.minimapContainer = new Container();
 	this.hudContainer = new Container();
 
 	this.createWorldBackground();
+	this.worldContainer.regX = -500;
+	this.worldContainer.regY = -300;
 	this.worldContainer.addChild(this.foodContainer);
 	this.worldContainer.addChild(this.otherWormsContainer);
 
+	this.hudContainer.addChild(this.minimapContainer);
+	
 	this.stage.addChild(this.worldContainer);
 	this.stage.addChild(this.wormContainer);
 	this.stage.addChild(this.hudContainer);
 };
 
 RenderEngine.prototype.createWorldBackground = function() {
-	var s = new Shape();
+	var worldShape = new Shape();
 
-	var img = new Image();
-	img.onload = function(){
-	     s.graphics.beginBitmapFill(img, 'repeat-x');
-	     s.graphics.setStrokeStyle(4);
-	     s.graphics.beginStroke('red');
-	     s.graphics.drawRect(0, 0, 4000, 4000);
+	var worldImage = new Image();
+	worldImage.onload = function(){
+	     worldShape.graphics.beginBitmapFill(worldImage, 'repeat-x');
+	     worldShape.graphics.setStrokeStyle(10);
+	     worldShape.graphics.beginStroke('red');
+	     worldShape.graphics.drawRect(0, 0, 4000, 4000);
 	}
-	img.src = 'images/stars.jpg';
+	worldImage.src = 'images/stars.jpg';
 
-	this.worldContainer.addChild(s);
-}
+	this.worldContainer.addChild(worldShape);
+} 
 
 RenderEngine.prototype.renderFrame = function() {
 	this.renderWorm();
 	this.renderOtherWorms();
 	this.renderFoods();
+	this.renderMinimap();
 	this.renderScore();
 	this.renderLeader();
 	this.renderFPS();
@@ -70,13 +74,13 @@ RenderEngine.prototype.renderFrame = function() {
 
 RenderEngine.prototype.renderWorm = function() {
 	if(this.wormNotRendered()) {
-		this.worm = new WormShape(this.wormContainer, Model.worm);
-		this.worldContainer.x = -Model.worm.segments[0].x;
-		this.worldContainer.y = -Model.worm.segments[0].y;
+		this.worm = new WormShape(this.wormContainer);
+		this.worldContainer.x = -Model.worm.x;
+		this.worldContainer.y = -Model.worm.y;
 	} else {
-		this.worldContainer.x = -Model.worm.segments[0].x;
-		this.worldContainer.y = -Model.worm.segments[0].y;
-		this.worm.update(Model.worm);
+		this.worldContainer.x = -Model.worm.x;
+		this.worldContainer.y = -Model.worm.y;
+		this.worm.update();
 	}
 };
 
@@ -110,11 +114,19 @@ RenderEngine.prototype.renderFood = function(id) {
 	}
 };
 
+RenderEngine.prototype.renderMinimap = function() {
+	if(this.minimapNotRendered()) {
+		this.minimap = new MinimapShape(this.minimapContainer);
+	} else {
+		this.minimap.update();
+	}
+};
+
 RenderEngine.prototype.renderScore = function() {
 	if(this.scoreNotRendered()) {
-		this.score = new ScoreText(this.hudContainer, Model.worm);
+		this.score = new ScoreText(this.hudContainer);
 	} else {
-		this.score.update(Model.worm);
+		this.score.update();
 	}
 };
 
@@ -130,7 +142,7 @@ RenderEngine.prototype.renderLeader = function() {
 
 RenderEngine.prototype.renderFPS = function() {
 	if(this.fps == null) {
-		this.fps = new Text(Math.round(Ticker.getMeasuredFPS()) + " fps", '14px Arial', '#FFFFFF');
+		this.fps = new Text(Math.round(Ticker.getMeasuredFPS()) + " fps", '14px sans-serif', '#FFFFFF');
 		this.fps.set({
 			x: 20,
 			y: 570
@@ -151,6 +163,10 @@ RenderEngine.prototype.otherWormNotRendered = function(id) {
 
 RenderEngine.prototype.foodNotRendered = function(id) {
 	return this.foods[id] == null;
+};
+
+RenderEngine.prototype.minimapNotRendered = function(id) {
+	return this.minimap == null;
 };
 
 RenderEngine.prototype.scoreNotRendered = function() {
@@ -183,29 +199,28 @@ RenderEngine.prototype.showGameStage = function() {
 
 // Worm Visual Representation
 /////////////////////////////
-var WormShape = function(container, worm) {
+var WormShape = function(container) {
 	Shape.call(this);
 
-	this.color = worm.color;
+	this.color = Model.worm.color;
 	this.bodySegments = new Array();
-	this.nickname;
 
-	this.create(container, worm);
+	this.create(container);
 };
 
 // Extends of Shape class
 WormShape.prototype = Object.create(Shape.prototype);
 WormShape.prototype.constructor = WormShape;
 
-WormShape.prototype.create = function(container, worm) {
-	this.renderBody(container, worm)
-	this.renderHead(container, worm.segments[0]);
-	this.renderNickname(worm.nickname);
+WormShape.prototype.create = function(container) {
+	this.renderBody(container)
+	this.renderHead(container);
+	this.renderNickname();
 };
 
-WormShape.prototype.renderBody = function(container, worm) {
-	for(i = worm.segments.length-1; i > 0; i--) {
-		this.renderBodySegment(container, i, worm.segments[i]);
+WormShape.prototype.renderBody = function(container) {
+	for(i = Model.worm.segments.length-1; i > 0; i--) {
+		this.renderBodySegment(container, i, Model.worm.segments[i]);
 	}
 };
 
@@ -220,7 +235,7 @@ WormShape.prototype.renderBodySegment = function(container, index, segment) {
 	container.addChild(this.bodySegments[index]);
 };
 
-WormShape.prototype.renderHead = function(container, head) {
+WormShape.prototype.renderHead = function(container) {
 	this.graphics.beginFill(this.color).drawCircle(0, 0, 20);
 	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
 	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
@@ -230,14 +245,14 @@ WormShape.prototype.renderHead = function(container, head) {
 	this.set({ 
 		x: 500, 
 		y: 300, 
-		rotation:head.rotation, 
+		rotation:Model.worm.segments[0].rotation, 
 	});
 
 	container.addChild(this);
 };
 
-WormShape.prototype.renderNickname = function(nickname) {
-	this.nickname = new Text(nickname, '14px Arial', '#FFFFFF');
+WormShape.prototype.renderNickname = function() {
+	this.nickname = new Text(Model.worm.nickname, 'bold 14px sans-serif', '#FFFFFF');
 	this.nickname.set({
 		regX: this.nickname.getMeasuredWidth() / 2,
 		regY: -20,
@@ -258,12 +273,12 @@ WormShape.prototype.remove = function() {
 	this.parent.removeChild(this);
 };
 
-WormShape.prototype.update = function(worm) {
-	this.lookTo(worm.segments[0].rotation);
+WormShape.prototype.update = function() {
+	this.lookTo(Model.worm.segments[0].rotation);
 	
-	for(i = 1; i < worm.segments.length; i++) {
-		this.bodySegments[i].x = worm.segments[i].x - worm.segments[0].x + 500;
-		this.bodySegments[i].y = worm.segments[i].y - worm.segments[0].y + 300;
+	for(i = 1; i < Model.worm.segments.length; i++) {
+		this.bodySegments[i].x = Model.worm.segments[i].x - Model.worm.x + 500;
+		this.bodySegments[i].y = Model.worm.segments[i].y - Model.worm.y + 300;
 	}
 };
 
@@ -333,14 +348,14 @@ OtherWormShape.prototype.renderHead = function(container, head) {
 	this.set({ 
 		x: head.x, 
 		y: head.y, 
-		rotation:head.rotation, 
+		rotation: head.rotation, 
 	});
 
 	container.addChild(this);
 };
 
 OtherWormShape.prototype.renderNickname = function(nickname) {
-	this.nickname = new Text(nickname, '14px Arial', '#FFFFFF');
+	this.nickname = new Text(nickname, '14px sans-serif', '#FFFFFF');
 	this.nickname.set({
 		regX: this.nickname.getMeasuredWidth() / 2,
 		regY: -20,
@@ -362,7 +377,7 @@ OtherWormShape.prototype.remove = function() {
 };
 
 OtherWormShape.prototype.update = function(worm) {
-	this.moveTo(worm.segments[0].x, worm.segments[0].y);
+	this.moveTo(worm.x, worm.y);
 	this.lookTo(worm.segments[0].rotation);
 	
 	for(i = 1; i < worm.segments.length; i++) {
@@ -418,28 +433,79 @@ FoodShape.prototype.remove = function() {
 
 
 
+// Minimap Visual Representation
+/////////////////////////////
+var MinimapShape = function(container) {
+	Shape.call(this);
+
+	this.wormBlip;
+
+	this.create(container);
+};
+
+// Extends of Shape class
+MinimapShape.prototype = Object.create(Shape.prototype);
+MinimapShape.prototype.constructor = MinimapShape;
+
+MinimapShape.prototype.create = function(container) {
+	this.graphics.beginFill('grey').drawRect(0, 0, 80, 80);
+	this.set({
+		x: 900,
+		y: 500,
+		alpha: 0.5
+	});
+	container.addChild(this);
+	
+	this.renderWormBlip();
+};
+
+MinimapShape.prototype.renderWormBlip = function() {
+	var blipX = this.x + Model.worm.x / 50;
+	var blipY = this.y + Model.worm.y / 50;
+
+	this.wormBlip = new Shape();
+	this.wormBlip.graphics.beginFill(Model.worm.color).drawCircle(0, 0, 3);
+	this.wormBlip.set({
+		x: blipX,
+		y: blipY
+	});
+
+	this.parent.addChild(this.wormBlip);
+};
+
+MinimapShape.prototype.update = function() {
+	this.wormBlip.x = this.x + Model.worm.x / 50;
+	this.wormBlip.y = this.y + Model.worm.y / 50;
+};
+/////////////////////////////
+
+
+
+
+
+
 // Score Visual Representation
 //////////////////////////////
-var ScoreText = function(container, worm) {
+var ScoreText = function(container) {
 	Text.call(this);
-	this.create(container, worm);
+	this.create(container);
 };
 
 // Extends of Text class
 ScoreText.prototype = Object.create(Text.prototype);
 ScoreText.prototype.constructor = ScoreText;
 
-ScoreText.prototype.create = function(container, worm) {
-	this.text = worm.score;
-	this.font = "bold 24px Arial";
+ScoreText.prototype.create = function(container) {
+	this.text = Model.worm.score;
+	this.font = "bold 24px sans-serif";
 	this.color = 'yellow';
 	this.x = 20;
  	this.y = 20;
 	container.addChild(this);
 };
 
-ScoreText.prototype.update = function(worm) {
-	this.text = worm.score;
+ScoreText.prototype.update = function() {
+	this.text = Model.worm.score;
 };
 /////////////////////////////
 
@@ -462,7 +528,7 @@ LeaderText.prototype.constructor = LeaderText;
 LeaderText.prototype.create = function(container, leader) {
 	this.set({
 		text: leader.nickname + " - " + leader.score,
-		font: 'bold 12px Arial',
+		font: 'bold 12px sans-serif',
 		color: 'yellow',
 		x: 850,
 		y: 20,

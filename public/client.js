@@ -80,8 +80,6 @@ var IO = {
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
-Ticker.useRAF = true;
-
 stage.addEventListener('stagemousedown', function() {
 	IO.socket.emit('speedUp', null);
 });
@@ -92,7 +90,8 @@ stage.addEventListener('stagemouseup', function() {
 
 var Render = new RenderEngine(stage);
 
-Ticker.setFPS(60);
+Ticker.framerate = 60;
+Ticker.useRAF = true;
 var frame = 1;
 
 /////////////////////////////
