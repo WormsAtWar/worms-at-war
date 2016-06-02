@@ -80,7 +80,7 @@ var IO = {
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
-createjs.Ticker.timingMode = Ticker.TIMEOUT;
+Ticker.useRAF = true;
 
 stage.addEventListener('stagemousedown', function() {
 	IO.socket.emit('speedUp', null);

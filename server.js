@@ -87,7 +87,6 @@ io.sockets.on('connection', function(socket) {
 	var destinyDirection = Vector.unit(Vector(1,1));
 	////////////////////////////////////////////////
 
-
 	var gameLoopID;
 
 	function gameLoop() {
@@ -158,7 +157,7 @@ io.sockets.on('connection', function(socket) {
 
 
 	function updateDestiny(state) {
-		destinyDirection = Vector.unit(Vector.dif(mousePosition(state), currentPosition()));
+		destinyDirection = Vector.unit(Vector.dif(mousePosition(state), centeredPosition()));
 	}
 
 	function updateVelocity(delta) {
@@ -240,6 +239,10 @@ io.sockets.on('connection', function(socket) {
 
 	function currentPosition() {
 		return Vector(worms[myID].segments[0].x, worms[myID].segments[0].y);
+	}
+
+	function centeredPosition() {
+		return Vector(500, 300);
 	}
 
 	function currentVelocity(delta) {

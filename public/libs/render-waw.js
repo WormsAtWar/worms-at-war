@@ -21,19 +21,24 @@ var RenderEngine = function(stage) {
 
 	this.stage = stage;
 
-	this.foodContainer;
-	this.wormsContainer;
-	this.hudContainer;
 	this.initContainers();
 };
 
 RenderEngine.prototype.initContainers = function() {
+	this.worldContainer = new Container();
+	this.worldContainer.regX = -500;
+	this.worldContainer.regY = -300;
+
 	this.foodContainer = new Container();
-	this.wormsContainer = new Container();
+	this.otherWormsContainer = new Container();
+	this.wormContainer = new Container();
 	this.hudContainer = new Container();
 
-	this.stage.addChild(this.foodContainer);
-	this.stage.addChild(this.wormsContainer);
+	this.worldContainer.addChild(this.foodContainer);
+	this.worldContainer.addChild(this.otherWormsContainer);
+
+	this.stage.addChild(this.worldContainer);
+	this.stage.addChild(this.wormContainer);
 	this.stage.addChild(this.hudContainer);
 };
 
@@ -49,8 +54,12 @@ RenderEngine.prototype.renderFrame = function() {
 
 RenderEngine.prototype.renderWorm = function() {
 	if(this.wormNotRendered()) {
-		this.worm = new WormShape(this.wormsContainer, Model.worm);
+		this.worm = new WormShape(this.wormContainer, Model.worm);
+		this.worldContainer.x = -Model.worm.segments[0].x;
+		this.worldContainer.y = -Model.worm.segments[0].y;
 	} else {
+		this.worldContainer.x = -Model.worm.segments[0].x;
+		this.worldContainer.y = -Model.worm.segments[0].y;
 		this.worm.update(Model.worm);
 	}
 };
@@ -65,7 +74,7 @@ RenderEngine.prototype.renderOtherWorms = function() {
 
 RenderEngine.prototype.renderOtherWorm = function(id) {
 	if(this.otherWormNotRendered(id)) {
-		this.otherWorms[id] = new WormShape(this.wormsContainer, Model.otherWorms[id]);
+		this.otherWorms[id] = new OtherWormShape(this.otherWormsContainer, Model.otherWorms[id]);
 	} else {
 		this.otherWorms[id].update(Model.otherWorms[id]);
 	}
@@ -152,6 +161,10 @@ RenderEngine.prototype.showGameStage = function() {
 /////////////////////////////
 
 
+
+
+
+
 // Worm Visual Representation
 /////////////////////////////
 var WormShape = function(container, worm) {
@@ -199,8 +212,8 @@ WormShape.prototype.renderHead = function(container, head) {
 	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
 	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
 	this.set({ 
-		x: head.x, 
-		y: head.y, 
+		x: 500, 
+		y: 300, 
 		rotation:head.rotation, 
 	});
 
@@ -230,12 +243,11 @@ WormShape.prototype.remove = function() {
 };
 
 WormShape.prototype.update = function(worm) {
-	this.moveTo(worm.segments[0].x, worm.segments[0].y);
 	this.lookTo(worm.segments[0].rotation);
 	
 	for(i = 1; i < worm.segments.length; i++) {
-		this.bodySegments[i].x = worm.segments[i].x;
-		this.bodySegments[i].y = worm.segments[i].y;
+		this.bodySegments[i].x = worm.segments[i].x - worm.segments[0].x + 500;
+		this.bodySegments[i].y = worm.segments[i].y - worm.segments[0].y + 300;
 	}
 };
 
@@ -250,6 +262,114 @@ WormShape.prototype.lookTo = function(angle) {
 	this.rotation = angle;
 };
 /////////////////////////////
+
+
+
+
+
+
+// Other Worm Visual Representation
+///////////////////////////////////
+var OtherWormShape = function(container, worm) {
+	Shape.call(this);
+
+	this.color = worm.color;
+	this.bodySegments = new Array();
+	this.nickname;
+
+	this.create(container, worm);
+};
+
+// Extends of Shape class
+OtherWormShape.prototype = Object.create(Shape.prototype);
+OtherWormShape.prototype.constructor = OtherWormShape;
+
+OtherWormShape.prototype.create = function(container, worm) {
+	this.renderBody(container, worm)
+	this.renderHead(container, worm.segments[0]);
+	this.renderNickname(worm.nickname);
+};
+
+OtherWormShape.prototype.renderBody = function(container, worm) {
+	for(i = worm.segments.length-1; i > 0; i--) {
+		this.renderBodySegment(container, i, worm.segments[i]);
+	}
+};
+
+OtherWormShape.prototype.renderBodySegment = function(container, index, segment) {
+	this.bodySegments[index] = new Shape();
+	this.bodySegments[index].graphics.beginFill(this.color).drawCircle(0, 0, 20);
+	this.bodySegments[index].set({ 
+		x: segment.x, 
+		y: segment.y, 
+	});
+	
+	container.addChild(this.bodySegments[index]);
+};
+
+OtherWormShape.prototype.renderHead = function(container, head) {
+	this.graphics.beginFill(this.color).drawCircle(0, 0, 20);
+	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
+	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
+	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
+	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
+	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
+	this.set({ 
+		x: head.x, 
+		y: head.y, 
+		rotation:head.rotation, 
+	});
+
+	container.addChild(this);
+};
+
+OtherWormShape.prototype.renderNickname = function(nickname) {
+	this.nickname = new Text(nickname, '14px Arial', '#FFFFFF');
+	this.nickname.set({
+		regX: this.nickname.getMeasuredWidth() / 2,
+		regY: -20,
+		x: this.x,
+		y: this.y,
+	});
+
+	this.parent.addChild(this.nickname);
+};
+
+OtherWormShape.prototype.remove = function() {
+	this.parent.removeChild(this.nickname);
+
+	for(i = 0; i < this.bodySegments.length; i++) {
+		this.parent.removeChild(this.bodySegments[i]);
+	}
+
+	this.parent.removeChild(this);
+};
+
+OtherWormShape.prototype.update = function(worm) {
+	this.moveTo(worm.segments[0].x, worm.segments[0].y);
+	this.lookTo(worm.segments[0].rotation);
+	
+	for(i = 1; i < worm.segments.length; i++) {
+		this.bodySegments[i].x = worm.segments[i].x;
+		this.bodySegments[i].y = worm.segments[i].y;
+	}
+};
+
+OtherWormShape.prototype.moveTo = function(x, y) {
+	this.x = x;
+	this.y = y;
+	this.nickname.x = x;
+	this.nickname.y = y;
+};
+
+OtherWormShape.prototype.lookTo = function(angle) {
+	this.rotation = angle;
+};
+/////////////////////////////
+
+
+
+
 
 
 // Food Visual Representation
@@ -278,6 +398,10 @@ FoodShape.prototype.remove = function() {
 /////////////////////////////
 
 
+
+
+
+
 // Score Visual Representation
 //////////////////////////////
 var ScoreText = function(container, worm) {
@@ -302,6 +426,10 @@ ScoreText.prototype.update = function(worm) {
 	this.text = worm.score;
 };
 /////////////////////////////
+
+
+
+
 
 
 // Leader Visual Representation
