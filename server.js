@@ -21,7 +21,7 @@ server.listen(process.env.PORT || 3000, function() {
 var wormID = 0;
 var worms = new Array();
 
-var foodMax = 30;
+var foodMax = 200;
 var foodCount = 0;
 var foods = new Array();
  
@@ -30,8 +30,8 @@ setInterval(supplyFood, 3000);
 
 function createFood() {
 	for(id = 0; id < foodMax; id++) {
-		var randomX = (Math.random() * 990) + 5;
-		var randomY = (Math.random() * 590) + 5;
+		var randomX = (Math.random() * 3980) + 10;
+		var randomY = (Math.random() * 3980) + 10;
 		foods[id] = new Food(id, randomX, randomY);
 		foodCount++;
 	}
@@ -39,8 +39,8 @@ function createFood() {
 
 function supplyFood() {
 	if(foodCount < foodMax) {
-		var randomX = (Math.random() * 990) + 5;
-		var randomY = (Math.random() * 590) + 5;
+		var randomX = (Math.random() * 3980) + 10;
+		var randomY = (Math.random() * 3980) + 10;
 		var food = new Food(foods.length, randomX, randomY);
 
 		foods[food.id] = food;

@@ -136,7 +136,7 @@ function startGame() {
 }
 
 
-$("#game").hide();
+$("#world").hide();
 
 $("#startButton").click(function() {
     startGame();

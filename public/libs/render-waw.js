@@ -34,6 +34,7 @@ RenderEngine.prototype.initContainers = function() {
 	this.wormContainer = new Container();
 	this.hudContainer = new Container();
 
+	this.createWorldBackground();
 	this.worldContainer.addChild(this.foodContainer);
 	this.worldContainer.addChild(this.otherWormsContainer);
 
@@ -41,6 +42,21 @@ RenderEngine.prototype.initContainers = function() {
 	this.stage.addChild(this.wormContainer);
 	this.stage.addChild(this.hudContainer);
 };
+
+RenderEngine.prototype.createWorldBackground = function() {
+	var s = new Shape();
+
+	var img = new Image();
+	img.onload = function(){
+	     s.graphics.beginBitmapFill(img, 'repeat-x');
+	     s.graphics.setStrokeStyle(4);
+	     s.graphics.beginStroke('red');
+	     s.graphics.drawRect(0, 0, 4000, 4000);
+	}
+	img.src = 'images/stars.jpg';
+
+	this.worldContainer.addChild(s);
+}
 
 RenderEngine.prototype.renderFrame = function() {
 	this.renderWorm();
@@ -154,9 +170,9 @@ RenderEngine.prototype.removeFood = function(id) {
 };
 
 RenderEngine.prototype.showGameStage = function() {
-	$("#start").fadeOut();
-	$("#start").css("display", "none");
-	$("#game").fadeIn();
+	$("#login").fadeOut();
+	$("#login").css("display", "none");
+	$("#world").fadeIn();
 };
 /////////////////////////////
 

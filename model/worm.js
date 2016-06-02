@@ -18,8 +18,8 @@ module.exports = function Worm(id, nickname) {
 	};
 
 	this.generateHead = function() {
-		var randomX = Math.random() * 990 + 5;
-		var randomY = Math.random() * 590 + 5;
+		var randomX = Math.random() * 3980 + 10;
+		var randomY = Math.random() * 3980 + 10;
 		this.segments[0] = new WormHead(randomX, randomY);
 	};
 

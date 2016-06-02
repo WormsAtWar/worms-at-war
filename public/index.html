@@ -5,16 +5,18 @@
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 
-<body style="background: black;">
-	<div style="width: 1000px; height: 600px; border: solid 2px white; margin: 0 auto; margin-top: 20px;">
-		<div id="game">
-			<canvas id="gameCanvas" width="1000" height="600">
-				Su navegador no soporta este elemento canvas! :(
-			</canvas>
-		</div>
-		<div id="start" style="width: 200px; margin: 0 auto; margin-top: 30%;">
-			<input id="nicknameInput" class="form-control" type="text" placeholder="Enter nickname here..."></input>
-			<button type="button" id="startButton" class="btn btn-block btn-primary">Start</button>
+<body class="container">
+	<div id="game" class="centered" style="margin-top: 30px;">
+		<div style="float: left; width: 1000px; height: 600px; background: black;">
+			<div id="world">
+				<canvas id="gameCanvas" width="1000" height="600">
+					Su navegador no soporta este elemento canvas! :(
+				</canvas>
+			</div>
+			<div id="login" style="width: 200px; margin: 0 auto; margin-top: 30%;">
+				<input id="nicknameInput" class="form-control" type="text" placeholder="Enter nickname here..."></input>
+				<button type="button" id="startButton" class="btn btn-block btn-primary">Start</button>
+			</div>
 		</div>
 	</div>
 	<!-- SCRIPTS -->
