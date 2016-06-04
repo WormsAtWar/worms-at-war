@@ -21,7 +21,7 @@ server.listen(process.env.PORT || 3000, function() {
 var wormID = 0;
 var worms = new Array();
 
-var foodMax = 200;
+var foodMax = 300;
 var foodCount = 0;
 var foods = new Array();
  
@@ -193,6 +193,7 @@ io.sockets.on('connection', function(socket) {
 	function updatePosition(delta) {
 		var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
 		worms[myID].moveTo(cartesianPosition.x, cartesianPosition.y);
+		//worms[myID].moveTo(currentVelocity(delta));
 	}
 
 	function updateHeadRotation(delta) {
@@ -204,6 +205,7 @@ io.sockets.on('connection', function(socket) {
 	function detectCollisions() {
 		detectFoodCollisions();
 		detectWormsCollisions();
+		detectBordersCollisions();
 	}
 
 	function detectFoodCollisions() {
@@ -229,6 +231,13 @@ io.sockets.on('connection', function(socket) {
 					clearInterval(gameLoopID);
 				}
 			}
+		}
+	}
+
+	function detectBordersCollisions() {
+		if(worms[myID].collideWithBorder()) {
+			socket.emit("dead", null);
+			clearInterval(gameLoopID);
 		}
 	}
 

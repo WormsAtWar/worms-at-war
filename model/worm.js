@@ -51,6 +51,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.eat = function(food) {
 		this.score += food.points;
+		this.segments[this.segments.length] = new WormSegment(this.segments[this.segments.length-1]);
 	};
 
 	this.collideFood = function(food) {
@@ -70,6 +71,10 @@ module.exports = function Worm(id, nickname) {
 			return false;
 		}
 	};
+
+	this.collideWithBorder = function() {
+		return !((this.x + 20 < 4000 && this.x - 20 > 0) && (this.y + 20 < 4000 && this.y - 20 > 0));
+	}
 
 };
 

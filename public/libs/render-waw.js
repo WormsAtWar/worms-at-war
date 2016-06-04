@@ -277,8 +277,12 @@ WormShape.prototype.update = function() {
 	this.lookTo(Model.worm.segments[0].rotation);
 	
 	for(i = 1; i < Model.worm.segments.length; i++) {
-		this.bodySegments[i].x = Model.worm.segments[i].x - Model.worm.x + 500;
-		this.bodySegments[i].y = Model.worm.segments[i].y - Model.worm.y + 300;
+		if(this.segmentNotRendered(i)) {
+			this.renderBodySegment(this.parent, i, Model.worm.segments[i]);
+		} else {
+			this.bodySegments[i].x = Model.worm.segments[i].x - Model.worm.x + 500;
+			this.bodySegments[i].y = Model.worm.segments[i].y - Model.worm.y + 300;
+		}
 	}
 };
 
@@ -291,6 +295,10 @@ WormShape.prototype.moveTo = function(x, y) {
 
 WormShape.prototype.lookTo = function(angle) {
 	this.rotation = angle;
+};
+
+WormShape.prototype.segmentNotRendered = function(id) {
+	return this.bodySegments[id] == null;
 };
 /////////////////////////////
 
@@ -381,8 +389,12 @@ OtherWormShape.prototype.update = function(worm) {
 	this.lookTo(worm.segments[0].rotation);
 	
 	for(i = 1; i < worm.segments.length; i++) {
-		this.bodySegments[i].x = worm.segments[i].x;
-		this.bodySegments[i].y = worm.segments[i].y;
+		if(this.segmentNotRendered(i)) {
+			this.renderBodySegment(this.parent, i, worm.segments[i]);
+		} else {
+			this.bodySegments[i].x = worm.segments[i].x;
+			this.bodySegments[i].y = worm.segments[i].y;
+		}
 	}
 };
 
@@ -395,6 +407,10 @@ OtherWormShape.prototype.moveTo = function(x, y) {
 
 OtherWormShape.prototype.lookTo = function(angle) {
 	this.rotation = angle;
+};
+
+OtherWormShape.prototype.segmentNotRendered = function(id) {
+	return this.bodySegments[id] == null;
 };
 /////////////////////////////
 
