@@ -116,8 +116,8 @@ Ticker.addEventListener('tick', function(event) {
 
 function destinyUpdate() {
 	var state = {
-		mouseX: stage.mouseX,
-		mouseY: stage.mouseY
+		mouseX: Math.round(stage.mouseX),
+		mouseY: Math.round(stage.mouseY)
 	};
 	IO.socket.emit('destinyUpdate', state);
 }

@@ -13,6 +13,4 @@ module.exports = function CircularBoundary(x, y, radius) {
 		return distance < this.radius + boundary.radius;
 	};
 
-
-
 }

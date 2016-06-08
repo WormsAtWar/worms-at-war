@@ -28,7 +28,7 @@ module.exports = function Worm(id, nickname) {
 	};
 
 	this.generateBody = function() {
-		for(i = 1; i < 20; i++) {
+		for(i = 1; i < 6; i++) {
 			this.segments[i] = new WormSegment(this.segments[i-1]);
 		}
 	};
@@ -51,6 +51,12 @@ module.exports = function Worm(id, nickname) {
 
 	this.eat = function(food) {
 		this.score += food.points;
+		if(this.segments.length <= this.score / 50 + 5) {
+			this.grow();
+		}
+	};
+
+	this.grow = function() {
 		this.segments[this.segments.length] = new WormSegment(this.segments[this.segments.length-1]);
 	};
 

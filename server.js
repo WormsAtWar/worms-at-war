@@ -131,7 +131,7 @@ io.sockets.on('connection', function(socket) {
 
 		wormID++;
 
-		gameLoopID = setInterval(gameLoop, 1000/60);
+		gameLoopID = setInterval(gameLoop, 1000/20);
 	}
 
 	function onDestinyUpdate(state) {
@@ -149,6 +149,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onDisconnect(data) {
+		clearInterval(gameLoopID);
 		worms.splice(myID, 1, null);
 		io.sockets.emit('otherWormDisconnect', myID);
 	}
@@ -228,7 +229,7 @@ io.sockets.on('connection', function(socket) {
 			if(worm != null) {
 				if(worms[myID].collideHeadToBody(worm)) {
 					socket.emit("dead", null);
-					clearInterval(gameLoopID);
+					//clearInterval(gameLoopID);
 				}
 			}
 		}
@@ -237,7 +238,7 @@ io.sockets.on('connection', function(socket) {
 	function detectBordersCollisions() {
 		if(worms[myID].collideWithBorder()) {
 			socket.emit("dead", null);
-			clearInterval(gameLoopID);
+			//clearInterval(gameLoopID);
 		}
 	}
 
@@ -263,7 +264,7 @@ io.sockets.on('connection', function(socket) {
 
 	function correctDirection() {
 		var distance = Vector.len(Vector.dif(destinyDirection, currentDirection()));
-		return distance < 0.0001;
+		return distance < 0.000001;
 	}
 
 	function setAngle(angle) {

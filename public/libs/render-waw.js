@@ -51,7 +51,7 @@ RenderEngine.prototype.createWorldBackground = function() {
 
 	var worldImage = new Image();
 	worldImage.onload = function(){
-	     worldShape.graphics.beginBitmapFill(worldImage, 'repeat-x');
+	     worldShape.graphics.beginBitmapFill(worldImage, 'repeat');
 	     worldShape.graphics.setStrokeStyle(10);
 	     worldShape.graphics.beginStroke('red');
 	     worldShape.graphics.drawRect(0, 0, 4000, 4000);
