@@ -431,7 +431,7 @@ FoodShape.prototype = Object.create(Shape.prototype);
 FoodShape.prototype.constructor = FoodShape;
 
 FoodShape.prototype.create = function(container, food) {
-	this.graphics.beginFill('red').drawCircle(food.x, food.y, food.points / 2);
+	this.graphics.beginFill(food.color).drawCircle(food.x, food.y, food.points / 2);
 	this.set({ alpha: 0 });
 
 	container.addChild(this);
