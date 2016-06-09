@@ -19,6 +19,10 @@ module.exports = function Worm(id, nickname) {
 		return this.segments[0];
 	};
 
+	this.tail = function() {
+		return this.segments[this.segments.length-1];
+	};
+
 	this.generateHead = function() {
 		var randomX = Math.random() * 3980 + 10;
 		var randomY = Math.random() * 3980 + 10;
