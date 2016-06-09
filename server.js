@@ -88,6 +88,7 @@ io.sockets.on('connection', function(socket) {
 	////////////////////////////////////////////////
 
 	var gameLoopID;
+	var nitroLoopID;
 
 	function gameLoop() {
 		var now = Date.now();
@@ -105,6 +106,14 @@ io.sockets.on('connection', function(socket) {
 
 		socket.emit('wormUpdated', wormUpdated);
 		socket.broadcast.emit('otherWormUpdated', wormUpdated);
+	}
+
+	function nitroLoop() {
+		if(worms[myID].score >= 5) {
+			worms[myID].score -= 5;
+		} else {
+			onSlowDown();
+		}
 	}
 
 
@@ -139,13 +148,17 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onSpeedUp(data) {
-		polarVelocity = {r: 180, w: polarVelocity.w}; // speed * 1.8
-		angularVelocity -= angularVelocity / 4; // less mobility on turns
+		if(worms[myID].score >= 5) {
+			polarVelocity = {r: 180, w: polarVelocity.w}; // speed * 1.8
+			angularVelocity -= angularVelocity / 4; // less mobility on turns
+			nitroLoopID = setInterval(nitroLoop, 1000/4);
+		}
 	}
 
 	function onSlowDown(data) {
 		polarVelocity = {r: 100, w: polarVelocity.w};
 		angularVelocity = Math.PI * 1;
+		clearInterval(nitroLoopID);
 	}
 
 	function onDisconnect(data) {
