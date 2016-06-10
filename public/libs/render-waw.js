@@ -182,7 +182,9 @@ RenderEngine.prototype.removeWorm = function(id) {
 };
 
 RenderEngine.prototype.removeFood = function(id) {
-	this.foods[id].remove();
+	if(this.foods[id] != null) {
+		this.foods[id].remove();
+	}
 };
 
 RenderEngine.prototype.showGameStage = function() {
