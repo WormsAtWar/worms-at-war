@@ -12,13 +12,17 @@ var Tween = createjs.Tween;
 // RENDER ENGINE
 /////////////////////////////
 var RenderEngine = function(stage) {
-	this.worm;
+	this.init(stage);
+};
+
+RenderEngine.prototype.init = function(stage) {
+	this.worm = null;
 	this.otherWorms = new Array();
 	this.foods = new Array();
-	this.minimap;
-	this.score;
-	this.leader;
-	this.fps;
+	this.minimap = null;
+	this.score = null;
+	this.leader = null;
+	this.fps = null;
 
 	this.stage = stage;
 
@@ -192,6 +196,20 @@ RenderEngine.prototype.showGameStage = function() {
 	$("#login").css("display", "none");
 	$("#world").fadeIn();
 };
+
+RenderEngine.prototype.showLoginStage = function() {
+	$("h3#lastScore").text("Last Score:  " + lastScore);
+
+	$("#world").fadeOut();
+	$("#world").css("display", "none");
+	$("#login").fadeIn();
+};
+
+RenderEngine.prototype.reset = function() {
+	this.stage.removeAllChildren();
+	this.stage.clear();
+	this.init(this.stage);
+};
 /////////////////////////////
 
 
@@ -285,6 +303,10 @@ WormShape.prototype.update = function() {
 			this.bodySegments[i].x = Model.worm.segments[i].x - Model.worm.x + 500;
 			this.bodySegments[i].y = Model.worm.segments[i].y - Model.worm.y + 300;
 		}
+	}
+	if(this.bodySegments.length > Model.worm.segments.length) {
+		this.parent.removeChild(this.bodySegments[Model.worm.segments.length]);
+		this.bodySegments = this.bodySegments.slice(0, this.bodySegments.length-1);
 	}
 };
 
@@ -397,6 +419,10 @@ OtherWormShape.prototype.update = function(worm) {
 			this.bodySegments[i].x = worm.segments[i].x;
 			this.bodySegments[i].y = worm.segments[i].y;
 		}
+	}
+	if(this.bodySegments.length > worm.segments.length) {
+		this.parent.removeChild(this.bodySegments[worm.segments.length]);
+		this.bodySegments = this.bodySegments.slice(0, this.bodySegments.length-1);
 	}
 };
 

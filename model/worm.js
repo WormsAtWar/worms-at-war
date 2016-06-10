@@ -64,6 +64,17 @@ module.exports = function Worm(id, nickname) {
 		this.segments[this.segments.length] = new WormSegment(this.segments[this.segments.length-1]);
 	};
 
+	this.nitro = function(food) {
+		this.score -= 5;
+		if(this.segments.length > this.score / 50 + 5) {
+			this.shrink();
+		}
+	};
+
+	this.shrink = function() {
+		this.segments = this.segments.slice(0, this.segments.length-1);
+	};
+
 	this.collideFood = function(food) {
 		return this.head().collide(food);
 	};

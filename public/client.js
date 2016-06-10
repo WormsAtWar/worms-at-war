@@ -4,6 +4,7 @@ var Model = {
 	foods: new Array(),
 	leader: null
 }
+var lastScore = 0;
 
 var status = 'waiting';
 
@@ -57,8 +58,17 @@ var IO = {
 		Render.removeFood(id);
 	},
 
-	onDead : function(data) {
-		window.location.reload();
+	onDead : function(score) {
+		status = 'waiting';
+		lastScore = score;
+		Model = {
+			worm: null,
+			otherWorms: new Array(),
+			foods: new Array(),
+			leader: null
+		}
+		Render.reset();
+		Render.showLoginStage();
 	},
 
 	onUpdateLeader : function(data) {
@@ -91,7 +101,7 @@ stage.addEventListener('stagemouseup', function() {
 var Render = new RenderEngine(stage);
 
 Ticker.framerate = 60;
-Ticker.useRAF = true;
+Ticker.timingMode = Ticker.RAF;
 var frame = 1;
 
 /////////////////////////////
@@ -116,8 +126,8 @@ Ticker.addEventListener('tick', function(event) {
 
 function destinyUpdate() {
 	var state = {
-		mouseX: Math.round(stage.mouseX),
-		mouseY: Math.round(stage.mouseY)
+		mouseX: stage.mouseX,
+		mouseY: stage.mouseY
 	};
 	IO.socket.emit('destinyUpdate', state);
 }

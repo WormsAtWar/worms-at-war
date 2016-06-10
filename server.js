@@ -100,13 +100,13 @@ io.sockets.on('connection', function(socket) {
 		var now = Date.now();
 		var then = worms[myID].lastUpdate == null ? Date.now() : worms[myID].lastUpdate;
 		var delta = (now - then) / 1000;
-
+		
+		worms[myID].lastUpdate = now;
+		
 		updateVelocity(delta);
 		updatePosition(delta);
 		updateHeadRotation();
 		detectCollisions();
-
-		worms[myID].lastUpdate = now;
 
 		var wormUpdated = worms[myID];
 
@@ -116,7 +116,7 @@ io.sockets.on('connection', function(socket) {
 
 	function nitroLoop() {
 		if(worms[myID].score >= 5) {
-			worms[myID].score -= 5;
+			worms[myID].nitro();
 			supplyFoodOn(worms[myID].tail().x, worms[myID].tail().y, worms[myID].color, null, 5);
 		} else {
 			onSlowDown();
@@ -253,7 +253,8 @@ io.sockets.on('connection', function(socket) {
 			if(worm != null) {
 				if(worms[myID].collideHeadToBody(worm)) {
 					dropFoodByDead();
-					socket.emit("dead", null);
+					socket.emit("dead", worms[myID].score);
+					socket.disconnect();
 				}
 			}
 		}
@@ -262,7 +263,8 @@ io.sockets.on('connection', function(socket) {
 	function detectBordersCollisions() {
 		if(worms[myID].collideWithBorder()) {
 			dropFoodByDead();
-			socket.emit("dead", null);
+			socket.emit("dead", worms[myID].score);
+			socket.disconnect();
 		}
 	}
 
