@@ -136,8 +136,10 @@ io.sockets.on('connection', function(socket) {
 
 		var wormUpdated = worms[myID];
 
-		socket.emit('wormUpdated', wormUpdated);
-		socket.broadcast.emit('otherWormUpdated', wormUpdated);
+		if(wormUpdated != null) {
+			socket.emit('wormUpdated', wormUpdated);
+			socket.broadcast.emit('otherWormUpdated', wormUpdated);
+		}
 	}
 
 	function nitroLoop() {
