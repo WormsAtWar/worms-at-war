@@ -7,6 +7,7 @@ var Shape = createjs.Shape;
 var Text = createjs.Text;
 var Ticker = createjs.Ticker;
 var Tween = createjs.Tween;
+var Sound = createjs.Sound;
 
 
 // RENDER ENGINE
@@ -467,6 +468,9 @@ OtherWormShape.prototype.segmentNotRendered = function(id) {
 /////////////////////////////
 var FoodShape = function(container, food) {
 	Shape.call(this);
+
+	this.halo;
+
 	this.create(container, food);
 };
 
@@ -475,15 +479,21 @@ FoodShape.prototype = Object.create(Shape.prototype);
 FoodShape.prototype.constructor = FoodShape;
 
 FoodShape.prototype.create = function(container, food) {
+	this.halo = new Shape();
+	this.halo.graphics.beginFill(food.color).drawCircle(food.x, food.y, food.points / 2 + 5);
+	this.halo.set({ alpha: 0 });
 	this.graphics.beginFill(food.color).drawCircle(food.x, food.y, food.points / 2);
 	this.set({ alpha: 0 });
 
+	container.addChild(this.halo);
 	container.addChild(this);
 	
 	Tween.get(this).to({ alpha: 1 }, 1000);
+	Tween.get(this.halo).to({ alpha: 0.5 }, 1000);
 };
 
 FoodShape.prototype.remove = function() {
+	this.parent.removeChild(this.halo);
 	this.parent.removeChild(this);
 };
 /////////////////////////////
