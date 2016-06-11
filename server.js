@@ -81,6 +81,32 @@ function getLeader() {
 	return leader;
 }
 
+setInterval(updateWanted, 5000);
+
+function updateWanted() {
+	var wanted = getWanted();
+	io.sockets.emit('updateWanted', wanted);
+}
+
+function getWanted() {
+	var wanted;
+
+	for(id in worms) {
+		var eachWorm = worms[id];
+		if(eachWorm != null) {
+			if(wanted != null) {
+			    if(eachWorm.kills > wanted.kills) {
+			    	wanted = eachWorm;
+			    }
+			} else {
+				wanted = eachWorm;
+			}
+		}
+	}
+
+	return wanted;
+}
+
 io.sockets.on('connection', function(socket) {
 
 	bindEvents();
@@ -226,8 +252,11 @@ io.sockets.on('connection', function(socket) {
 
 	function detectCollisions() {
 		detectFoodCollisions();
-		detectWormsCollisions();
-		detectBordersCollisions();
+		if(mustDead()) {
+			dropFoodByDead();
+			socket.emit("dead", worms[myID].score);
+			socket.disconnect();
+		}
 	}
 
 	function detectFoodCollisions() {
@@ -247,25 +276,25 @@ io.sockets.on('connection', function(socket) {
 		}
 	}
 
+	function mustDead() {
+		return detectWormsCollisions() || detectBordersCollisions();
+	}
+
 	function detectWormsCollisions() {
+		var collision = false;
+
 		for(id in worms) {
 			var worm = worms[id];
 			if(worm != null) {
-				if(worms[myID].collideHeadToBody(worm)) {
-					dropFoodByDead();
-					socket.emit("dead", worms[myID].score);
-					socket.disconnect();
-				}
+				collision = collision || worms[myID].collideHeadToBody(worm);			
 			}
 		}
+
+		return collision;
 	}
 
 	function detectBordersCollisions() {
-		if(worms[myID].collideWithBorder()) {
-			dropFoodByDead();
-			socket.emit("dead", worms[myID].score);
-			socket.disconnect();
-		}
+		return worms[myID].collideWithBorder()
 	}
 
 	function dropFoodByDead() {

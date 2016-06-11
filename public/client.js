@@ -2,7 +2,8 @@ var Model = {
 	worm: null,
 	otherWorms: new Array(),
 	foods: new Array(),
-	leader: null
+	leader: null,
+	wanted: null
 }
 var lastScore = 0;
 
@@ -27,6 +28,7 @@ var IO = {
 		IO.socket.on('foodSwallowed', IO.onFoodSwallowed);
 		IO.socket.on('dead', IO.onDead);
 		IO.socket.on('updateLeader', IO.onUpdateLeader);
+		IO.socket.on('updateWanted', IO.onUpdateWanted);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
@@ -73,6 +75,10 @@ var IO = {
 
 	onUpdateLeader : function(data) {
 		Model.leader = data;
+	},
+
+	onUpdateWanted : function(data) {
+		Model.wanted = data;
 	},
 
 	onOtherWormDisconnect : function(id) {

@@ -22,6 +22,7 @@ RenderEngine.prototype.init = function(stage) {
 	this.minimap = null;
 	this.score = null;
 	this.leader = null;
+	this.wanted = null;
 	this.fps = null;
 
 	this.stage = stage;
@@ -72,6 +73,7 @@ RenderEngine.prototype.renderFrame = function() {
 	this.renderMinimap();
 	this.renderScore();
 	this.renderLeader();
+	this.renderWanted();
 	this.renderFPS();
 	this.stage.update();
 }
@@ -144,6 +146,16 @@ RenderEngine.prototype.renderLeader = function() {
 	}
 };
 
+RenderEngine.prototype.renderWanted = function() {
+	if(this.wantedNotRendered()) {
+		if(Model.wanted != null) {
+			this.wanted = new WantedText(this.hudContainer, Model.wanted);
+		}
+	} else {
+		this.wanted.update(Model.wanted);
+	}
+};
+
 RenderEngine.prototype.renderFPS = function() {
 	if(this.fps == null) {
 		this.fps = new Text(Math.round(Ticker.getMeasuredFPS()) + " fps", '14px sans-serif', '#FFFFFF');
@@ -179,6 +191,10 @@ RenderEngine.prototype.scoreNotRendered = function() {
 
 RenderEngine.prototype.leaderNotRendered = function() {
 	return this.leader == null;
+};
+
+RenderEngine.prototype.wantedNotRendered = function() {
+	return this.wanted == null;
 };
 
 RenderEngine.prototype.removeWorm = function(id) {
@@ -387,7 +403,7 @@ OtherWormShape.prototype.renderHead = function(container, head) {
 };
 
 OtherWormShape.prototype.renderNickname = function(nickname) {
-	this.nickname = new Text(nickname, '14px sans-serif', '#FFFFFF');
+	this.nickname = new Text(nickname, '14px bold sans-serif', '#FFFFFF');
 	this.nickname.set({
 		regX: this.nickname.getMeasuredWidth() / 2,
 		regY: -20,
@@ -583,5 +599,43 @@ LeaderText.prototype.create = function(container, leader) {
 
 LeaderText.prototype.update = function(leader) {
 	this.text = leader.nickname + " - " + leader.score;
+};
+/////////////////////////////
+
+
+
+
+
+
+
+// Wanted Visual Representation
+//////////////////////////////
+var WantedText = function(container, wanted) {
+	Text.call(this);
+	this.create(container, wanted);
+};
+
+// Extends of Text class
+WantedText.prototype = Object.create(Text.prototype);
+WantedText.prototype.constructor = WantedText;
+
+WantedText.prototype.create = function(container, wanted) {
+	this.set({
+		text: "The MOST WANTED is: " + wanted.nickname + " with " + wanted.kills + " kills!",
+		font: 'bold 16px sans-serif',
+		color: 'white',
+		regX: -this.getMeasuredWidth() / 2,
+		x: 500,
+		y: 20,
+	});
+
+	container.addChild(this);
+};
+
+WantedText.prototype.update = function(wanted) {
+	this.set({
+		text: "The MOST WANTED is: " + wanted.nickname + " with " + wanted.kills + " kills!",
+		regX: this.getMeasuredWidth() / 2
+	});
 };
 /////////////////////////////

@@ -12,6 +12,7 @@ module.exports = function Worm(id, nickname) {
 	this.score = 0;
 	this.segments = new Array();
 	this.color = color.randomColor();
+	this.kills = 0;
 	this.lastUpdate = null;
 
 
@@ -75,6 +76,10 @@ module.exports = function Worm(id, nickname) {
 		this.segments = this.segments.slice(0, this.segments.length-1);
 	};
 
+	this.addKill = function() {
+		this.kills++;
+	};
+
 	this.collideFood = function(food) {
 		return this.head().collide(food);
 	};
@@ -86,7 +91,11 @@ module.exports = function Worm(id, nickname) {
 				for(i = 1; i < otherWorm.segments.length; i++) {
 					collision = collision || (this.head().collide(otherWorm.segments[i]));
 				}
+				if(collision) {
+					otherWorm.addKill();
+				}
 			}
+			
 			return collision;
 		} else {
 			return false;
