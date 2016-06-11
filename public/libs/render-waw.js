@@ -149,9 +149,7 @@ RenderEngine.prototype.renderLeader = function() {
 
 RenderEngine.prototype.renderWanted = function() {
 	if(this.wantedNotRendered()) {
-		if(Model.wanted != null) {
-			this.wanted = new WantedText(this.hudContainer, Model.wanted);
-		}
+		this.wanted = new WantedText(this.hudContainer, Model.wanted);
 	} else {
 		this.wanted.update(Model.wanted);
 	}
@@ -630,22 +628,28 @@ WantedText.prototype = Object.create(Text.prototype);
 WantedText.prototype.constructor = WantedText;
 
 WantedText.prototype.create = function(container, wanted) {
+	this.setText(wanted);
 	this.set({
-		text: "The MOST WANTED is: " + wanted.nickname + " with " + wanted.kills + " kills!",
 		font: 'bold 16px sans-serif',
 		color: 'white',
-		regX: -this.getMeasuredWidth() / 2,
+		regX: this.getMeasuredWidth() / 2,
 		x: 500,
-		y: 20,
+		y: 20
 	});
 
 	container.addChild(this);
 };
 
 WantedText.prototype.update = function(wanted) {
-	this.set({
-		text: "The MOST WANTED is: " + wanted.nickname + " with " + wanted.kills + " kills!",
-		regX: this.getMeasuredWidth() / 2
-	});
+	this.setText(wanted);
+	this.regX = this.getMeasuredWidth() / 2;
+};
+
+WantedText.prototype.setText = function(wanted) {
+	if(wanted != null) {
+		this.text = "The MOST WANTED is " + wanted.nickname + " with " + wanted.kills + " kills!";
+	} else {
+		this.text = "Who will be the next MOST WANTED?";
+	}
 };
 /////////////////////////////

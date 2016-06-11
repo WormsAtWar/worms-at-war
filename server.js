@@ -93,7 +93,7 @@ function getWanted() {
 
 	for(id in worms) {
 		var eachWorm = worms[id];
-		if(eachWorm != null) {
+		if(eachWorm != null && eachWorm.kills > 0) {
 			if(wanted != null) {
 			    if(eachWorm.kills > wanted.kills) {
 			    	wanted = eachWorm;
