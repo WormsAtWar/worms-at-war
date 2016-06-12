@@ -91,11 +91,10 @@ module.exports = function Worm(id, nickname) {
 				for(i = 1; i < otherWorm.segments.length; i++) {
 					collision = collision || (this.head().collide(otherWorm.segments[i]));
 				}
-				if(collision) {
-					otherWorm.addKill();
-				}
 			}
-			
+			if(collision) {
+				otherWorm.addKill();
+			}
 			return collision;
 		} else {
 			return false;
