@@ -207,7 +207,9 @@ RenderEngine.prototype.removeFood = function(id) {
 };
 
 RenderEngine.prototype.showGameStage = function() {
+	$("#logo").fadeOut();
 	$("#login").fadeOut();
+	$("#logo").css("display", "none");
 	$("#login").css("display", "none");
 	$("#world").fadeIn();
 };
@@ -217,7 +219,8 @@ RenderEngine.prototype.showLoginStage = function() {
 
 	$("#world").fadeOut();
 	$("#world").css("display", "none");
-	$("#login").fadeIn();
+	$("#logo").fadeIn();
+	$("#login").delay(500).fadeIn();
 };
 
 RenderEngine.prototype.reset = function() {

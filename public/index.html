@@ -2,21 +2,26 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Worms At War!</title>
+	<link rel="icon" type="image/png" sizes="16x16" href="images/favicon.ico">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 
-<body class="container">
-	<div id="game" class="centered" style="margin-top: 30px;">
-		<div style="float: left; width: 1000px; height: 600px; background: black;">
-			<div id="world">
+<body class="container" style="background-image: url('images/background.jpg');">
+	<div id="game" class="centered" style="margin-top: 50px;">
+		<div style="float: left; width: 1000px; height: 600px; ">
+			<div id="world" style="background: black;">
 				<canvas id="gameCanvas" width="1000" height="600">
 					Su navegador no soporta este elemento canvas! :(
 				</canvas>
 			</div>
-			<div id="login" style="width: 300px; margin: 0 auto; margin-top: 30%; text-align: center;">
-				<input id="nicknameInput" class="form-control" type="text" placeholder="Enter nickname here..."></input>
-				<button type="button" id="startButton" class="btn btn-block btn-primary">Start</button>
-				<h3 id="lastScore" style="color: yellow;" ></h3>
+			<div id="logo" style="text-align: center; width: 100%;">
+				<img src="images/wawlogo.png" width="500" style="margin: 0 auto;">
+			</div>
+			<div id="login" class="form-group has-warning" style="width: 300px; margin: 0 auto; text-align: center;">
+				<input id="nicknameInput" class="form-control input-lg" type="text" placeholder="Enter nickname here..." style="border: 3px solid #f2d529;border-radius: 30px"></input>
+				<br>
+				<button type="button" id="startButton" class="btn-lg btn-block btn-warning" style="border-radius: 30px">Start</button>
+				<h3 id="lastScore" style="color: indigo;" ></h3>
 			</div>
 		</div>
 	</div>
