@@ -507,6 +507,7 @@ var MinimapShape = function(container) {
 	Shape.call(this);
 
 	this.wormBlip;
+	this.wantedBlip;
 
 	this.create(container);
 };
@@ -525,6 +526,7 @@ MinimapShape.prototype.create = function(container) {
 	container.addChild(this);
 	
 	this.renderWormBlip();
+	this.renderWantedBlip();
 };
 
 MinimapShape.prototype.renderWormBlip = function() {
@@ -541,9 +543,57 @@ MinimapShape.prototype.renderWormBlip = function() {
 	this.parent.addChild(this.wormBlip);
 };
 
+MinimapShape.prototype.renderWantedBlip = function() {
+	if(Model.wanted != null){
+		if(Model.wanted.id != Model.worm.id) {
+			var blipX = this.x + Model.wanted.x / 50;
+			var blipY = this.y + Model.wanted.y / 50;
+
+			this.wantedBlip = new Shape();
+			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 4);
+			this.wantedBlip.graphics.beginFill('white').drawCircle(0, 0, 3);
+			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 2);
+			this.wantedBlip.set({
+				x: blipX,
+				y: blipY
+			});
+		}
+	}
+
+	this.parent.addChild(this.wantedBlip);
+};
+
 MinimapShape.prototype.update = function() {
 	this.wormBlip.x = this.x + Model.worm.x / 50;
 	this.wormBlip.y = this.y + Model.worm.y / 50;
+	
+	if(Model.wanted != null) {
+		if(Model.wanted.id != Model.worm.id) {
+			if(this.wantedBlipNotRendered()) {
+				this.renderWantedBlip();
+			} else {
+				this.updateWantedBlip();
+			}
+		} else {
+			if(!this.wantedNotRendered) {
+				this.removeWantedBlip();
+			}
+		}
+	}
+};
+
+MinimapShape.prototype.updateWantedBlip = function() {
+	this.wantedBlip.x = this.x + Model.wanted.x / 50;
+	this.wantedBlip.y = this.y + Model.wanted.y / 50;
+};
+
+MinimapShape.prototype.removeWantedBlip = function() {
+	this.parent.removeChild(this.wantedBlip);
+	this.wantedBlip = null;
+};
+
+MinimapShape.prototype.wantedBlipNotRendered = function() {
+	return this.wantedBlip == null;
 };
 /////////////////////////////
 
