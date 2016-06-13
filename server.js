@@ -288,15 +288,24 @@ io.sockets.on('connection', function(socket) {
 		for(id in worms) {
 			var worm = worms[id];
 			if(worm != null) {
-				collision = collision || worms[myID].collideHeadToBody(worm);			
+				collision = collision || worms[myID].collideHeadToBody(worm);		
+			}
+			if(collision && itsMostWanted(worms[myID])) {
+				worm.collectBounty(worms[myID]);
+				console.log(worm.kills);
 			}
 		}
 
 		return collision;
 	}
 
+	function itsMostWanted(worm) {
+		var wanted = getWanted();
+		return wanted != null ? worm.id == wanted.id : false;
+	}
+
 	function detectBordersCollisions() {
-		return worms[myID].collideWithBorder()
+		return worms[myID].collideWithBorder();
 	}
 
 	function dropFoodByDead() {

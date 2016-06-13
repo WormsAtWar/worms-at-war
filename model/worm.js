@@ -2,6 +2,7 @@ var color = require('randomcolor');
 var Vector = require('v2d');
 
 var CircularBoundary = require('./circular-boundary');
+var Food = require('./food');
 
 module.exports = function Worm(id, nickname) {
 
@@ -25,8 +26,8 @@ module.exports = function Worm(id, nickname) {
 	};
 
 	this.generateHead = function() {
-		var randomX = Math.random() * 3980 + 10;
-		var randomY = Math.random() * 3980 + 10;
+		var randomX = 1000 + Math.random() * 2000;
+		var randomY = 1000 + Math.random() * 2000;
 		this.segments[0] = new WormHead(randomX, randomY);
 		this.x = randomX;
 		this.y = randomY;
@@ -56,7 +57,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.eat = function(food) {
 		this.score += food.points;
-		if(this.segments.length <= this.score / 50 + 5) {
+		while(this.segments.length <= this.score / 50 + 5) {
 			this.grow();
 		}
 	};
@@ -67,7 +68,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.nitro = function(food) {
 		this.score -= 5;
-		if(this.segments.length > this.score / 50 + 5) {
+		while(this.segments.length > this.score / 50 + 5) {
 			this.shrink();
 		}
 	};
@@ -78,6 +79,10 @@ module.exports = function Worm(id, nickname) {
 
 	this.addKill = function() {
 		this.kills++;
+	};
+
+	this.collectBounty = function(worm) {
+		this.eat(new Food(null, 0, 0, null, worm.kills * 100));
 	};
 
 	this.collideFood = function(food) {
