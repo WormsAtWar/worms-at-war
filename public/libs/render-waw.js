@@ -319,7 +319,9 @@ WormShape.prototype.renderGlasses = function() {
 	});
 	this.parent.addChild(this.glasses);
 
-	Tween.get(this.glasses).to({ alpha: 1 }, 1000)
+	Tween.get(this.glasses)
+		.wait(3000)
+		.to({ alpha: 1 }, 1000)
 };
 
 WormShape.prototype.renderNickname = function() {
@@ -474,8 +476,8 @@ OtherWormShape.prototype.renderGlasses = function() {
 
 	this.parent.addChild(this.glasses);
 	Tween.get(this.glasses)
-		.wait(500)
-		.to({ alpha: 1 }, 1000);
+		.wait(3000)
+		.to({ alpha: 1 }, 1000)
 };
 
 OtherWormShape.prototype.renderNickname = function(nickname) {

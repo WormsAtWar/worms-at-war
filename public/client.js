@@ -29,6 +29,7 @@ var IO = {
 		IO.socket.on('dead', IO.onDead);
 		IO.socket.on('updateLeader', IO.onUpdateLeader);
 		IO.socket.on('updateWanted', IO.onUpdateWanted);
+		IO.socket.on('wantedDead', IO.onWantedDead);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
@@ -84,6 +85,10 @@ var IO = {
 
 	onUpdateWanted : function(data) {
 		Model.wanted = data;
+	},
+
+	onWantedDead : function(data) {
+		SoundEngine.wantedDead();
 	},
 
 	onOtherWormDisconnect : function(id) {
