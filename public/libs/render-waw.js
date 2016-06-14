@@ -81,7 +81,7 @@ RenderEngine.prototype.renderFrame = function() {
 
 RenderEngine.prototype.renderWorm = function() {
 	if(this.wormNotRendered()) {
-		this.worm = new WormShape(this.wormContainer);
+		this.worm = new WormShape(this.wormContainer, this.hudContainer);
 		this.worldContainer.x = -Model.worm.x;
 		this.worldContainer.y = -Model.worm.y;
 	} else {
@@ -242,7 +242,7 @@ RenderEngine.prototype.reset = function() {
 
 // Worm Visual Representation
 /////////////////////////////
-var WormShape = function(container) {
+var WormShape = function(container, hudContainer) {
 	Shape.call(this);
 
 	this.color = Model.worm.color;
@@ -251,17 +251,17 @@ var WormShape = function(container) {
 	this.graphicSegment = new Graphics();
 	this.graphicSegment.beginFill(this.color).drawCircle(0, 0, 20);
 
-	this.create(container);
+	this.create(container, hudContainer);
 };
 
 // Extends of Shape class
 WormShape.prototype = Object.create(Shape.prototype);
 WormShape.prototype.constructor = WormShape;
 
-WormShape.prototype.create = function(container) {
+WormShape.prototype.create = function(container, hudContainer) {
 	this.renderBody(container)
 	this.renderHead(container);
-	this.renderNickname();
+	this.renderNickname(hudContainer);
 };
 
 WormShape.prototype.renderBody = function(container) {
@@ -324,7 +324,7 @@ WormShape.prototype.renderGlasses = function() {
 		.to({ alpha: 1 }, 1000)
 };
 
-WormShape.prototype.renderNickname = function() {
+WormShape.prototype.renderNickname = function(hudContainer) {
 	this.nickname = new Text(Model.worm.nickname, 'bold 14px sans-serif', '#FFFFFF');
 	this.nickname.set({
 		regX: this.nickname.getMeasuredWidth() / 2,
@@ -333,11 +333,11 @@ WormShape.prototype.renderNickname = function() {
 		y: this.y
 	});
 
-	this.parent.addChild(this.nickname);
+	hudContainer.addChild(this.nickname);
 };
 
 WormShape.prototype.remove = function() {
-	this.parent.removeChild(this.nickname);
+	this.nickname.parent.removeChild(this.nickname);
 
 	if(!this.glassesNotRendered()) {
 		this.parent.removeChild(this.glasses);
@@ -481,7 +481,7 @@ OtherWormShape.prototype.renderGlasses = function() {
 };
 
 OtherWormShape.prototype.renderNickname = function(nickname) {
-	this.nickname = new Text(nickname, '14px bold sans-serif', '#FFFFFF');
+	this.nickname = new Text(nickname, 'bold 14px sans-serif', '#FFFFFF');
 	this.nickname.set({
 		regX: this.nickname.getMeasuredWidth() / 2,
 		regY: -20,
