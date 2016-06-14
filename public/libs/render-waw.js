@@ -7,8 +7,6 @@ var Shape = createjs.Shape;
 var Text = createjs.Text;
 var Ticker = createjs.Ticker;
 var Tween = createjs.Tween;
-var Sound = createjs.Sound;
-
 
 // RENDER ENGINE
 /////////////////////////////
@@ -17,6 +15,8 @@ var RenderEngine = function(stage) {
 };
 
 RenderEngine.prototype.init = function(stage) {
+	this.showWorm = true;
+
 	this.worm = null;
 	this.otherWorms = new Array();
 	this.foods = new Array();
@@ -194,6 +194,11 @@ RenderEngine.prototype.leaderNotRendered = function() {
 
 RenderEngine.prototype.wantedNotRendered = function() {
 	return this.wanted == null;
+};
+
+RenderEngine.prototype.stopRenderWorm = function() {
+	this.worm.remove();
+	this.showWorm = false;
 };
 
 RenderEngine.prototype.removeWorm = function(id) {

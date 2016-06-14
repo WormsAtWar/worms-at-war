@@ -61,16 +61,21 @@ var IO = {
 	},
 
 	onDead : function(score) {
-		status = 'waiting';
-		lastScore = score;
-		Model = {
-			worm: null,
-			otherWorms: new Array(),
-			foods: new Array(),
-			leader: null
-		}
-		Render.reset();
-		Render.showLoginStage();
+		SoundEngine.death();
+		Render.stopRenderWorm();
+		setTimeout(function() {
+			status = 'waiting';
+			lastScore = score;
+			Model = {
+				worm: null,
+				otherWorms: new Array(),
+				foods: new Array(),
+				leader: null,
+				wanted: null
+			}
+			Render.reset();
+			Render.showLoginStage();
+		}, 3000);
 	},
 
 	onUpdateLeader : function(data) {
@@ -105,6 +110,7 @@ stage.addEventListener('stagemouseup', function() {
 });
 
 var Render = new RenderEngine(stage);
+var SoundEngine = new SoundEngine();
 
 Ticker.framerate = 60;
 Ticker.timingMode = Ticker.RAF;
@@ -148,6 +154,8 @@ function startGame() {
 	IO.init();
 	
 	IO.socket.emit('wormLogin', nickname);
+
+	SoundEngine.login();
 }
 
 
