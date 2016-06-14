@@ -243,6 +243,9 @@ var WormShape = function(container) {
 	this.color = Model.worm.color;
 	this.bodySegments = new Array();
 
+	this.graphicSegment = new Graphics();
+	this.graphicSegment.beginFill(this.color).drawCircle(0, 0, 20);
+
 	this.create(container);
 };
 
@@ -263,11 +266,10 @@ WormShape.prototype.renderBody = function(container) {
 };
 
 WormShape.prototype.renderBodySegment = function(container, index, segment) {
-	this.bodySegments[index] = new Shape();
-	this.bodySegments[index].graphics.beginFill(this.color).drawCircle(0, 0, 20);
+	this.bodySegments[index] = new Shape(this.graphicSegment);
 	this.bodySegments[index].set({ 
-		x: segment.x, 
-		y: segment.y, 
+		x: segment.x,
+		y: segment.y
 	});
 	
 	container.addChild(this.bodySegments[index]);
@@ -275,12 +277,8 @@ WormShape.prototype.renderBodySegment = function(container, index, segment) {
 
 WormShape.prototype.renderHead = function(container) {
 	this.graphics.beginFill(this.color).drawCircle(0, 0, 20);
-	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
-	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
-	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
-	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
-	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
-	this.set({ 
+	this.renderEyes();
+	this.set({
 		x: 500, 
 		y: 300, 
 		rotation:Model.worm.segments[0].rotation, 
@@ -289,13 +287,43 @@ WormShape.prototype.renderHead = function(container) {
 	container.addChild(this);
 };
 
+WormShape.prototype.renderEyes = function() {
+	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
+	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
+	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
+	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
+	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
+};
+
+WormShape.prototype.renderGlasses = function() {
+	var glasses = new Shape();
+	var glassesImage = new Image();
+
+	glassesImage.onload = function(){
+	     glasses.graphics.beginBitmapFill(glassesImage, 'no-repeat');
+	     glasses.graphics.drawRect(0, 0, 16, 60);
+	}
+	glassesImage.src = 'images/glasses.png';
+	this.glasses = glasses;
+	this.glasses.set({
+		alpha: 0,
+		regY: 30,
+		x: this.x, 
+		y: this.y, 
+		rotation: this.rotation
+	});
+	this.parent.addChild(this.glasses);
+
+	Tween.get(this.glasses).to({ alpha: 1 }, 1000)
+};
+
 WormShape.prototype.renderNickname = function() {
 	this.nickname = new Text(Model.worm.nickname, 'bold 14px sans-serif', '#FFFFFF');
 	this.nickname.set({
 		regX: this.nickname.getMeasuredWidth() / 2,
 		regY: -20,
 		x: this.x,
-		y: this.y,
+		y: this.y
 	});
 
 	this.parent.addChild(this.nickname);
@@ -303,6 +331,10 @@ WormShape.prototype.renderNickname = function() {
 
 WormShape.prototype.remove = function() {
 	this.parent.removeChild(this.nickname);
+
+	if(!this.glassesNotRendered()) {
+		this.parent.removeChild(this.glasses);
+	}
 
 	for(i = 0; i < this.bodySegments.length; i++) {
 		this.parent.removeChild(this.bodySegments[i]);
@@ -312,6 +344,12 @@ WormShape.prototype.remove = function() {
 };
 
 WormShape.prototype.update = function() {
+	if(Model.worm.glasses) {
+		if(this.glassesNotRendered()) {
+			this.renderGlasses();
+		}
+	}
+
 	this.lookTo(Model.worm.segments[0].rotation);
 	
 	for(i = 1; i < Model.worm.segments.length; i++) {
@@ -322,25 +360,26 @@ WormShape.prototype.update = function() {
 			this.bodySegments[i].y = Model.worm.segments[i].y - Model.worm.y + 300;
 		}
 	}
+	
 	if(this.bodySegments.length > Model.worm.segments.length) {
 		this.parent.removeChild(this.bodySegments[Model.worm.segments.length]);
 		this.bodySegments = this.bodySegments.slice(0, this.bodySegments.length-1);
 	}
 };
 
-WormShape.prototype.moveTo = function(x, y) {
-	this.x = x;
-	this.y = y;
-	this.nickname.x = x;
-	this.nickname.y = y;
-};
-
 WormShape.prototype.lookTo = function(angle) {
 	this.rotation = angle;
+	if(Model.worm.glasses) {
+		this.glasses.rotation = angle;
+	}
 };
 
 WormShape.prototype.segmentNotRendered = function(id) {
 	return this.bodySegments[id] == null;
+};
+
+WormShape.prototype.glassesNotRendered = function() {
+	return this.glasses == null;
 };
 /////////////////////////////
 
@@ -357,6 +396,9 @@ var OtherWormShape = function(container, worm) {
 	this.color = worm.color;
 	this.bodySegments = new Array();
 	this.nickname;
+
+	this.graphicSegment = new Graphics();
+	this.graphicSegment.beginFill(this.color).drawCircle(0, 0, 20)
 
 	this.create(container, worm);
 };
@@ -378,8 +420,7 @@ OtherWormShape.prototype.renderBody = function(container, worm) {
 };
 
 OtherWormShape.prototype.renderBodySegment = function(container, index, segment) {
-	this.bodySegments[index] = new Shape();
-	this.bodySegments[index].graphics.beginFill(this.color).drawCircle(0, 0, 20);
+	this.bodySegments[index] = new Shape(this.graphicSegment);
 	this.bodySegments[index].set({ 
 		x: segment.x, 
 		y: segment.y, 
@@ -390,11 +431,7 @@ OtherWormShape.prototype.renderBodySegment = function(container, index, segment)
 
 OtherWormShape.prototype.renderHead = function(container, head) {
 	this.graphics.beginFill(this.color).drawCircle(0, 0, 20);
-	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
-	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
-	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
-	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
-	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
+	this.renderEyes();
 	this.set({ 
 		x: head.x, 
 		y: head.y, 
@@ -402,6 +439,38 @@ OtherWormShape.prototype.renderHead = function(container, head) {
 	});
 
 	container.addChild(this);
+};
+
+OtherWormShape.prototype.renderEyes = function() {
+	this.graphics.setStrokeStyle(2, 'square').beginStroke('#000000');
+	this.graphics.beginFill('white').drawCircle(5, -8, 8); //ojo izquierdo
+	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
+	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
+	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
+};
+
+OtherWormShape.prototype.renderGlasses = function() {
+	var glasses = new Shape();
+	glasses.set({
+		alpha: 0,
+		regY: 30,
+		x: this.x, 
+		y: this.y, 
+		rotation: this.rotation
+	});
+	
+	var glassesImage = new Image();
+	glassesImage.onload = function(){
+	     glasses.graphics.beginBitmapFill(glassesImage, 'no-repeat');
+	     glasses.graphics.drawRect(0, 0, 16, 60);
+	}
+	glassesImage.src = 'images/glasses.png';
+	this.glasses = glasses;
+
+	this.parent.addChild(this.glasses);
+	Tween.get(this.glasses)
+		.wait(500)
+		.to({ alpha: 1 }, 1000);
 };
 
 OtherWormShape.prototype.renderNickname = function(nickname) {
@@ -419,6 +488,10 @@ OtherWormShape.prototype.renderNickname = function(nickname) {
 OtherWormShape.prototype.remove = function() {
 	this.parent.removeChild(this.nickname);
 
+	if(!this.glassesNotRendered()) {
+		this.parent.removeChild(this.glasses);
+	}
+
 	for(i = 0; i < this.bodySegments.length; i++) {
 		this.parent.removeChild(this.bodySegments[i]);
 	}
@@ -427,8 +500,14 @@ OtherWormShape.prototype.remove = function() {
 };
 
 OtherWormShape.prototype.update = function(worm) {
-	this.moveTo(worm.x, worm.y);
-	this.lookTo(worm.segments[0].rotation);
+	if(worm.glasses) {
+		if(this.glassesNotRendered()) {
+			this.renderGlasses();
+		}
+	}
+
+	this.moveTo(worm);
+	this.lookTo(worm);
 	
 	for(i = 1; i < worm.segments.length; i++) {
 		if(this.segmentNotRendered(i)) {
@@ -444,19 +523,31 @@ OtherWormShape.prototype.update = function(worm) {
 	}
 };
 
-OtherWormShape.prototype.moveTo = function(x, y) {
-	this.x = x;
-	this.y = y;
-	this.nickname.x = x;
-	this.nickname.y = y;
+OtherWormShape.prototype.moveTo = function(worm) {
+	this.x = worm.x;
+	this.y = worm.y;
+	this.nickname.x = worm.x;
+	this.nickname.y = worm.y;
+
+	if(worm.glasses) {
+		this.glasses.x = worm.x;
+		this.glasses.y = worm.y;
+	}
 };
 
-OtherWormShape.prototype.lookTo = function(angle) {
-	this.rotation = angle;
+OtherWormShape.prototype.lookTo = function(worm) {
+	this.rotation = worm.segments[0].rotation;
+	if(worm.glasses) {
+		this.glasses.rotation = worm.segments[0].rotation;
+	}
 };
 
 OtherWormShape.prototype.segmentNotRendered = function(id) {
 	return this.bodySegments[id] == null;
+};
+
+OtherWormShape.prototype.glassesNotRendered = function() {
+	return this.glasses == null;
 };
 /////////////////////////////
 

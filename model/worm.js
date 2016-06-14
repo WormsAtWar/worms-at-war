@@ -13,6 +13,7 @@ module.exports = function Worm(id, nickname) {
 	this.score = 0;
 	this.segments = new Array();
 	this.color = color.randomColor();
+	this.glasses = false;
 	this.kills = 0;
 	this.lastUpdate = null;
 
@@ -83,6 +84,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.collectBounty = function(worm) {
 		this.eat(new Food(null, 0, 0, null, worm.kills * 100));
+		this.glasses = true;
 	};
 
 	this.collideFood = function(food) {
