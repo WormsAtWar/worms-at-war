@@ -68,7 +68,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.nitro = function(food) {
 		this.score -= 5;
-		while(this.segments.length > this.score / 50 + 5) {
+		if(this.segments.length > this.score / 50 + 5) {
 			this.shrink();
 		}
 	};
