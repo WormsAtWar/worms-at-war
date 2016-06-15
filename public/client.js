@@ -62,6 +62,7 @@ var IO = {
 	},
 
 	onDead : function(score) {
+		SoundEngine.stopBackgroundMusic();
 		SoundEngine.death();
 		Render.stopRenderWorm();
 		setTimeout(function() {
@@ -161,6 +162,7 @@ function startGame() {
 	IO.socket.emit('wormLogin', nickname);
 
 	SoundEngine.login();
+	SoundEngine.playBackgroundMusic();
 }
 
 
