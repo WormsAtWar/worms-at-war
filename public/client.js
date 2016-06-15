@@ -167,7 +167,6 @@ function startGame() {
 		SoundEngine.audioOff();
 	}
 
-	SoundEngine.login();
 	SoundEngine.playBackgroundMusic();
 }
 
