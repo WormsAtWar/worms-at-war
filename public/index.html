@@ -4,6 +4,11 @@
 	<title>Worms At War!</title>
 	<link rel="icon" type="image/png" sizes="16x16" href="images/favicon.ico">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-toggle.min.css">
+	<style type="text/css">
+		.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20px; }
+  		.toggle.ios .toggle-handle { border-radius: 20px; }
+	</style>
 </head>
 
 <body class="container" style="background-image: url('images/background.jpg');">
@@ -21,6 +26,10 @@
 				<input id="nicknameInput" class="form-control input-lg" type="text" placeholder="Enter nickname here..." style="border: 3px solid #f2d529;border-radius: 30px"></input>
 				<br>
 				<button type="button" id="startButton" class="btn-lg btn-block btn-warning" style="border-radius: 30px">Start</button>
+				<br>
+				<label for="sounds"> Sound FX </label>
+				<input checked type="checkbox" id="sounds" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger" data-size="large" data-style="ios">
+				
 				<h3 id="lastScore" style="color: indigo;" ></h3>
 			</div>
 		</div>
@@ -28,6 +37,7 @@
 	<!-- SCRIPTS -->
 	<script type="text/javascript" src="libs/jquery-1.12.3.min.js"></script>
 	<script type="text/javascript" src="libs/bootstrap.min.js"></script>
+	<script type="text/javascript" src="libs/bootstrap-toggle.min.js"></script>
 	<script type="text/javascript" src="libs/createjs-2015.11.26.min.js"></script>
 	<script type="text/javascript" src="libs/render-waw.js"></script>
 	<script type="text/javascript" src="libs/sound-waw.js"></script>
