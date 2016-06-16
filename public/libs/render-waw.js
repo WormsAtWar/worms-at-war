@@ -265,7 +265,7 @@ WormShape.prototype.create = function(container, hudContainer) {
 };
 
 WormShape.prototype.renderBody = function(container) {
-	for(i = Model.worm.segments.length-1; i > 0; i--) {
+	for(i = Model.worm.segments.length-1; i >= 0; i--) {
 		this.renderBodySegment(container, i, Model.worm.segments[i]);
 	}
 };
@@ -282,11 +282,12 @@ WormShape.prototype.renderBodySegment = function(container, index, segment) {
 
 WormShape.prototype.renderHead = function(container) {
 	this.graphics.beginFill(this.color).drawCircle(0, 0, 20);
+	this.graphics.beginFill(this.color).drawRect(-15, -20, 15, 40);
 	this.renderEyes();
 	this.set({
 		x: 500, 
 		y: 300, 
-		rotation:Model.worm.segments[0].rotation, 
+		rotation: Model.worm.head.rotation, 
 	});
 
 	container.addChild(this);
@@ -298,6 +299,7 @@ WormShape.prototype.renderEyes = function() {
 	this.graphics.beginFill('white').drawCircle(5, 8, 8); //ojo derecho
 	this.graphics.beginFill('black').drawCircle(9, -8, 2); //pupila izquierda
 	this.graphics.beginFill('black').drawCircle(9, 8, 2); //pupila derecha
+	this.graphics.endStroke();
 };
 
 WormShape.prototype.renderGlasses = function() {
@@ -357,7 +359,7 @@ WormShape.prototype.update = function() {
 		}
 	}
 
-	this.lookTo(Model.worm.segments[0].rotation);
+	this.lookTo(Model.worm.head.rotation);
 	
 	for(i = 1; i < Model.worm.segments.length; i++) {
 		if(this.segmentNotRendered(i)) {
@@ -416,7 +418,7 @@ OtherWormShape.prototype.constructor = OtherWormShape;
 
 OtherWormShape.prototype.create = function(container, worm) {
 	this.renderBody(container, worm)
-	this.renderHead(container, worm.segments[0]);
+	this.renderHead(container, worm.head);
 	this.renderNickname(worm.nickname);
 };
 
@@ -543,9 +545,9 @@ OtherWormShape.prototype.moveTo = function(worm) {
 };
 
 OtherWormShape.prototype.lookTo = function(worm) {
-	this.rotation = worm.segments[0].rotation;
+	this.rotation = worm.head.rotation;
 	if(worm.glasses) {
-		this.glasses.rotation = worm.segments[0].rotation;
+		this.glasses.rotation = worm.head.rotation;
 	}
 };
 

@@ -15,12 +15,9 @@ SoundEngine.prototype.init = function() {
 	], 'sounds/');
 };
 
-SoundEngine.prototype.audioOn = function() {
-	Sound.muted = false;
-};
 
-SoundEngine.prototype.audioOff = function() {
-	Sound.muted = true;
+SoundEngine.prototype.mute = function(muted) {
+	Sound.muted = muted;
 };
 
 SoundEngine.prototype.death = function() {

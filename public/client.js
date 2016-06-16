@@ -161,12 +161,7 @@ function startGame() {
 	
 	IO.socket.emit('wormLogin', nickname);
 
-	if($('#sounds').is(":checked")) {
-		SoundEngine.audioOn();
-	} else {
-		SoundEngine.audioOff();
-	}
-
+	SoundEngine.mute(!$('#sounds').is(":checked"));
 	SoundEngine.playBackgroundMusic();
 }
 

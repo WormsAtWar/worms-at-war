@@ -176,7 +176,7 @@ io.sockets.on('connection', function(socket) {
 
 		wormID++;
 
-		gameLoopID = setInterval(gameLoop, 1000/20);
+		gameLoopID = setInterval(gameLoop, 1000/60);
 	}
 
 	function onDestinyUpdate(state) {
@@ -185,6 +185,7 @@ io.sockets.on('connection', function(socket) {
 
 	function onSpeedUp(data) {
 		if(worms[myID].score >= 5) {
+			worms[myID].deltaDisplacement = 20;
 			polarVelocity = {r: 180, w: polarVelocity.w}; // speed * 1.8
 			angularVelocity -= angularVelocity / 4; // less mobility on turns
 			nitroLoopID = setInterval(nitroLoop, 1000/4);
@@ -192,6 +193,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onSlowDown(data) {
+		worms[myID].deltaDisplacement = 10;
 		polarVelocity = {r: 100, w: polarVelocity.w};
 		angularVelocity = Math.PI * 1;
 		clearInterval(nitroLoopID);
@@ -241,9 +243,12 @@ io.sockets.on('connection', function(socket) {
 		polarVelocity = {r: polarVelocity.r, w: theta};
 	}
 
+	var modul = 0;
+    var deltaDisplacement = 50;
+
 	function updatePosition(delta) {
-		var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
-		worms[myID].moveTo(cartesianPosition.x, cartesianPosition.y);
+		//var cartesianPosition = Vector.sum(currentPosition(), currentVelocity(delta));
+		worms[myID].moveTo(currentVelocity(delta));
 	}
 
 	function updateHeadRotation(delta) {
