@@ -193,7 +193,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onSlowDown(data) {
-		worms[myID].deltaDisplacement = 10;
+		worms[myID].deltaDisplacement = 15;
 		polarVelocity = {r: 100, w: polarVelocity.w};
 		angularVelocity = Math.PI * 1;
 		clearInterval(nitroLoopID);

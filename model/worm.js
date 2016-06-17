@@ -19,7 +19,7 @@ module.exports = function Worm(id, nickname) {
 	this.kills = 0;
 	this.lastUpdate = null;
 
-	this.deltaDisplacement = 10;
+	this.deltaDisplacement = 15;
 	this.modul = 0;
 
 
@@ -118,7 +118,7 @@ function WormHead(x, y) {
 	this.y = y;
 	this.nextMove = Vector(0,0);
 	this.rotation = 0;
-	this.boundary = new CircularBoundary(this.x, this.y, 20);
+	this.boundary = new CircularBoundary(this.x, this.y, 23);
 
 
 	this.collide = function(collisionable) {
@@ -134,7 +134,7 @@ function WormHead(x, y) {
 	}
 
 	this.moveTo = function(displacement) {
-		var newPosition = Vector.sum(this.vectorizedPosition(), displacement);
+		var newPosition = Vector.sum(this.vectorizedPosition(), this.nextMove);
 		this.x = newPosition.x;
 		this.y = newPosition.y;
 		this.nextMove = displacement;
