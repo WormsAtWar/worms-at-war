@@ -5,32 +5,29 @@
 	<link rel="icon" type="image/png" sizes="16x16" href="images/favicon.ico">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-toggle.min.css">
-	<style type="text/css">
-		.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20px; }
-  		.toggle.ios .toggle-handle { border-radius: 20px; }
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 
-<body class="container" style="background-image: url('images/background.jpg');">
-	<div id="game" class="centered" style="margin-top: 50px;">
-		<div style="float: left; width: 1000px; height: 600px; ">
-			<div id="world" style="background: black;">
+<body class="container">
+	<div id="game" class="centered game">
+		<div class="game-body">
+			<div id="world" class="world hidden-div">
 				<canvas id="gameCanvas" width="1000" height="600">
 					Su navegador no soporta este elemento canvas! :(
 				</canvas>
 			</div>
-			<div id="logo" style="text-align: center; width: 100%;">
-				<img src="images/wawlogo.png" width="500" style="margin: 0 auto;">
+			<div id="logo" class="logo hidden-div">
+				<img src="images/wawlogo.png">
 			</div>
-			<div id="login" class="form-group has-warning" style="width: 300px; margin: 0 auto; text-align: center;">
-				<input id="nicknameInput" class="form-control input-lg" type="text" placeholder="Enter nickname here..." style="border: 3px solid #f2d529;border-radius: 30px"></input>
+			<div id="login" class="login hidden-div form-group has-warning">
+				<input id="nicknameInput" class="rounded form-control input-lg nickname" type="text" placeholder="Enter nickname here..."></input>
 				<br>
-				<button type="button" id="startButton" class="btn-lg btn-block btn-warning" style="border-radius: 30px">Start</button>
+				<button type="button" onclick="login()" class="rounded btn-lg btn-block btn-warning">Start</button>
 				<br>
 				<label for="sounds"> Sound FX </label>
 				<input checked type="checkbox" id="sounds" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger" data-size="large" data-style="ios">
 				
-				<h3 id="lastScore" style="color: indigo;" ></h3>
+				<h3 id="lastScore" class="last-score"></h3>
 			</div>
 		</div>
 	</div>
@@ -39,9 +36,9 @@
 	<script type="text/javascript" src="libs/bootstrap.min.js"></script>
 	<script type="text/javascript" src="libs/bootstrap-toggle.min.js"></script>
 	<script type="text/javascript" src="libs/createjs-2015.11.26.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="libs/render-waw.js"></script>
 	<script type="text/javascript" src="libs/sound-waw.js"></script>
-	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="client.js"></script>
 </body>
 </html>

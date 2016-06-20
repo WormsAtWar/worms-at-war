@@ -224,7 +224,7 @@ RenderEngine.prototype.showLoginStage = function() {
 
 	$("#world").fadeOut();
 	$("#world").css("display", "none");
-	$("#logo").fadeIn();
+	$("#logo").delay(200).fadeIn();
 	$("#login").delay(500).fadeIn();
 };
 

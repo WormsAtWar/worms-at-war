@@ -1,0 +1,58 @@
+
+.toggle.ios, .toggle-on.ios, .toggle-off.ios { 
+	border-radius: 30px;
+}
+
+.toggle.ios .toggle-handle { 
+	border-radius: 30px;
+}
+
+.container {
+	background-image: url('../images/background.jpg');
+}
+
+.game {
+	margin-top: 50px;
+}
+
+.game-body {
+	float: left; 
+	width: 1000px; 
+	height: 600px;
+}
+
+.hidden-div {
+	display: none;
+}
+
+.world {
+	background: black;
+}
+
+.logo {
+	text-align: center; 
+	width: 100%;
+}
+
+.logo img {
+	width: 500;
+	margin: 0 auto;
+}
+
+.login {
+	width: 300px; 
+	margin: 0 auto; 
+	text-align: center;
+}
+
+.login input[type = "text"] {
+	border: 3px solid #f2d529;
+}
+
+.rounded {
+	border-radius: 30px;
+}
+
+.last-score {
+	color: indigo;
+}

@@ -153,7 +153,7 @@ function destinyUpdate() {
 
 ///////////////////////////////////////////////
 
-function startGame() {
+function login() {
 	var nickname = $("#nicknameInput").val() || '';
 	
 	Render.showGameStage();
@@ -166,8 +166,4 @@ function startGame() {
 }
 
 
-$("#world").hide();
-
-$("#startButton").click(function() {
-    startGame();
-});
+Render.showLoginStage();
