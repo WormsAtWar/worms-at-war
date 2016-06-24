@@ -56,10 +56,15 @@ module.exports = function Worm(id, nickname) {
 		if(this.modul >= this.deltaDisplacement) {
 			this.modul = this.modul - this.deltaDisplacement;
 			this.segments.add(new WormSegment(this.x, this.y));
-			if(this.segments.length > this.length()) {
+			while(this.segments.length >= this.length()) {
 				this.segments.remove();
 			}
 		}
+	};
+
+	this.teleport = function(wormhole) {
+		this.head.teleportTo(wormhole.destiny.x, wormhole.destiny.y);
+		this.updatePosition();
 	};
 
 	this.lookTo = function(angle) {
@@ -137,6 +142,12 @@ function WormHead(x, y) {
 		var newPosition = Vector.sum(this.vectorizedPosition(), displacement);
 		this.x = newPosition.x;
 		this.y = newPosition.y;
+		this.boundary.update(this);
+	};
+
+	this.teleportTo = function(x, y) {
+		this.x = x;
+		this.y = y;
 		this.boundary.update(this);
 	};
 
