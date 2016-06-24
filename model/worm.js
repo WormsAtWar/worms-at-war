@@ -12,6 +12,7 @@ module.exports = function Worm(id, nickname) {
 	this.x;
 	this.y;
 	this.score = 0;
+	this.rank;
 	this.head;
 	this.segments = new FIFOArray();
 	this.color = color.randomColor();
@@ -41,10 +42,14 @@ module.exports = function Worm(id, nickname) {
 
 	this.generateHead();
 	
-	this.moveTo = function(displacement) {
-		this.head.moveTo(displacement);
+	this.updatePosition = function() {
 		this.x = this.head.x;
 		this.y = this.head.y;
+	};
+
+	this.moveTo = function(displacement) {
+		this.head.moveTo(displacement);
+		this.updatePosition();
 
 		this.modul += Vector.len(displacement);
 		
@@ -52,9 +57,7 @@ module.exports = function Worm(id, nickname) {
 			this.modul = this.modul - this.deltaDisplacement;
 			this.segments.add(new WormSegment(this.x, this.y));
 			if(this.segments.length > this.length()) {
-				while(this.segments.length >= this.length()) {
-					this.segments.remove();
-				}
+				this.segments.remove();
 			}
 		}
 	};
@@ -91,10 +94,8 @@ module.exports = function Worm(id, nickname) {
 	this.collideHeadToBody = function(otherWorm) {
 		if(this.id != otherWorm.id) {
 			var collision = (this.head.collide(otherWorm.head)) && (this.score < otherWorm.score);
-			if(!collision) {
-				for(i = 0; i < otherWorm.segments.length; i++) {
-					collision = collision || (this.head.collide(otherWorm.segments[i]));
-				}
+			for(var i = 0; i < otherWorm.segments.length; i++) {
+				collision = collision || (this.head.collide(otherWorm.segments[i]));
 			}
 			if(collision) {
 				otherWorm.addKill();
@@ -107,7 +108,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.collideWithBorder = function() {
 		return !((this.x + 20 < 4000 && this.x - 20 > 0) && (this.y + 20 < 4000 && this.y - 20 > 0));
-	}
+	};
 
 };
 
@@ -116,7 +117,6 @@ function WormHead(x, y) {
 
 	this.x = x;
 	this.y = y;
-	this.nextMove = Vector(0,0);
 	this.rotation = 0;
 	this.boundary = new CircularBoundary(this.x, this.y, 23);
 
@@ -134,10 +134,9 @@ function WormHead(x, y) {
 	}
 
 	this.moveTo = function(displacement) {
-		var newPosition = Vector.sum(this.vectorizedPosition(), this.nextMove);
+		var newPosition = Vector.sum(this.vectorizedPosition(), displacement);
 		this.x = newPosition.x;
 		this.y = newPosition.y;
-		this.nextMove = displacement;
 		this.boundary.update(this);
 	};
 
@@ -148,19 +147,10 @@ function WormSegment(x,y) {
 
 	this.x = x;
 	this.y = y;
-	this.nextMove = Vector(0,0);
 	this.boundary = new CircularBoundary(this.x, this.y, 20);
 
 	this.vectorizedPosition = function() {
 		return Vector(this.x, this.y);
 	}
-
-	this.move = function(next) {
-		var newPosition = Vector.sum(this.vectorizedPosition(), this.nextMove);
-		this.x = newPosition.x;
-		this.y = newPosition.y;
-		this.nextMove = next.nextMove;
-		this.boundary.update(this);
-	};
 
 }

@@ -27,7 +27,8 @@
 				<label for="sounds"> Sound FX </label>
 				<input checked type="checkbox" id="sounds" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger" data-size="large" data-style="ios">
 				
-				<h3 id="lastScore" class="last-score"></h3>
+				<h3 id="lastScore" class="last-stat"></h3>
+				<h3 id="lastRank" class="last-stat"></h3>
 			</div>
 		</div>
 	</div>
@@ -37,8 +38,9 @@
 	<script type="text/javascript" src="libs/bootstrap-toggle.min.js"></script>
 	<script type="text/javascript" src="libs/createjs-2015.11.26.min.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="libs/render-waw.js"></script>
+	<script type="text/javascript" src="libs/render-engine.js"></script>
 	<script type="text/javascript" src="libs/sound-waw.js"></script>
+	<script type="text/javascript" src="model.js"></script>
 	<script type="text/javascript" src="client.js"></script>
 </body>
 </html>

@@ -1,12 +1,8 @@
-var Model = {
-	worm: null,
-	otherWorms: new Array(),
-	foods: new Array(),
-	leader: null,
-	wanted: null
-}
-var lastScore = 0;
 
+var Model = new Model();
+
+var lastScore = 0;
+var lastRank = 0;
 var status = 'waiting';
 
 
@@ -27,7 +23,7 @@ var IO = {
 		IO.socket.on('suppliedFood', IO.onSuppliedFood);
 		IO.socket.on('foodSwallowed', IO.onFoodSwallowed);
 		IO.socket.on('dead', IO.onDead);
-		IO.socket.on('updateLeader', IO.onUpdateLeader);
+		IO.socket.on('updateTopTen', IO.onUpdateTopTen);
 		IO.socket.on('updateWanted', IO.onUpdateWanted);
 		IO.socket.on('wantedDead', IO.onWantedDead);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
@@ -37,11 +33,13 @@ var IO = {
 		Model.worm = data.worm;
 		Model.otherWorms = data.otherWorms;
 		Model.foods = data.foods;
+		Model.notifyLoginSuccess();
 		status = 'success';
 	},
 
 	onNewWormLogin : function(data) {
-		Model.otherWorms[data.id] = data;
+		Model.otherWorms.push(data);
+		Model.notifyNewWormLogin(data.id);
 	},
 
 	onWormUpdated : function(data) {
@@ -49,52 +47,45 @@ var IO = {
 	},
 
 	onOtherWormUpdated : function(data) {
-		Model.otherWorms[data.id] = data;
+		Model.otherWorms.replace(data);
 	},
 
 	onSuppliedFood : function(data) {
-		Model.foods[data.id] = data;
+		Model.foods.push(data);
+		Model.notifySuppliedFood(data.id);
 	},
 
 	onFoodSwallowed : function(id) {
-		Model.foods.splice(id, 1, null);
-		Render.removeFood(id);
+		Model.foods.remove(id);
+		Model.notifyFoodSwallowed(id);
 	},
 
-	onDead : function(score) {
-		SoundEngine.stopBackgroundMusic();
-		SoundEngine.death();
-		Render.stopRenderWorm();
+	onDead : function(data) {
+		Model.notifyDead();
 		setTimeout(function() {
 			status = 'waiting';
-			lastScore = score;
-			Model = {
-				worm: null,
-				otherWorms: new Array(),
-				foods: new Array(),
-				leader: null,
-				wanted: null
-			}
-			Render.reset();
-			Render.showLoginStage();
+			lastScore = Model.worm.score;
+			lastRank = Model.worm.rank;
+			Model.reset();
+			Model.notifyAfterDeadEnds();
 		}, 3000);
 	},
 
-	onUpdateLeader : function(data) {
-		Model.leader = data;
+	onUpdateTopTen : function(data) {
+		Model.topTen = data;
 	},
 
 	onUpdateWanted : function(data) {
 		Model.wanted = data;
 	},
 
-	onWantedDead : function(data) {
-		SoundEngine.wantedDead();
+	onWantedDead : function(id) {
+		Model.notifyWantedDead(id);
 	},
 
 	onOtherWormDisconnect : function(id) {
-		Model.otherWorms.splice(id, 1, null);
-		Render.removeWorm(id);
+		Model.otherWorms.remove(id);
+		Model.notifyWormDisconnect(id);
 	}
 
 };
@@ -156,14 +147,35 @@ function destinyUpdate() {
 function login() {
 	var nickname = $("#nicknameInput").val() || '';
 	
-	Render.showGameStage();
 	IO.init();
 	
 	IO.socket.emit('wormLogin', nickname);
-
-	SoundEngine.mute(!$('#sounds').is(":checked"));
-	SoundEngine.playBackgroundMusic();
 }
 
 
 Render.showLoginStage();
+
+
+
+///////////////////////////////////////////////
+Array.prototype.get = function(id) {
+	return this.find(function(elem) {
+		return elem.id == id;
+	});
+};
+
+Array.prototype.getIndex = function(id) {
+	return this.indexOf(this.get(id));
+};
+
+Array.prototype.replace = function(elem) {
+	var index = this.getIndex(elem.id);
+	if(index >= 0) {
+		this.splice(index, 1, elem);
+	}
+};
+
+Array.prototype.remove = function(id) {
+	this.splice(this.getIndex(id), 1);
+};
+///////////////////////////////////////////////
