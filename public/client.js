@@ -26,6 +26,9 @@ var IO = {
 		IO.socket.on('updateTopTen', IO.onUpdateTopTen);
 		IO.socket.on('updateWanted', IO.onUpdateWanted);
 		IO.socket.on('wantedDead', IO.onWantedDead);
+		IO.socket.on('wormholeCreated', IO.onWormholeCreated);
+		IO.socket.on('newWormhole', IO.onNewWormhole);
+		IO.socket.on('teleportation', IO.onTeleportation);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
@@ -33,6 +36,7 @@ var IO = {
 		Model.worm = data.worm;
 		Model.otherWorms = data.otherWorms;
 		Model.foods = data.foods;
+		Model.wormholes = data.wormholes;
 		Model.notifyLoginSuccess();
 		status = 'success';
 	},
@@ -83,6 +87,20 @@ var IO = {
 		Model.notifyWantedDead(id);
 	},
 
+	onWormholeCreated : function(data) {
+		Model.wormholes.push(data);
+		Model.notifyWormholeCreated(data.id);
+	},
+
+	onNewWormhole : function(data) {
+		Model.wormholes.push(data);
+		Model.notifyNewWormhole(data.id);
+	},
+
+	onTeleportation : function(data) {
+		Model.notifyTeleportation();
+	},
+
 	onOtherWormDisconnect : function(id) {
 		Model.otherWorms.remove(id);
 		Model.notifyWormDisconnect(id);
@@ -104,6 +122,12 @@ stage.addEventListener('stagemousedown', function() {
 
 stage.addEventListener('stagemouseup', function() {
 	IO.socket.emit('slowDown', null);
+});
+
+$(document).on("keypress", function (key) {
+    if(key.which == 32) {
+    	IO.socket.emit('wormholeCreation', null);
+    }
 });
 
 var Render = new RenderEngine(stage);

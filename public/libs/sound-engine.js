@@ -13,7 +13,9 @@ SoundEngine.prototype = {
 		Sound.registerSounds([
 			{ src: 'background_music.ogg', id: 'backgroundMusic' },
 			{ src: 'death.ogg', id: 'death' },
-			{ src: 'TurnDownForWhat.ogg', id: 'wantedDead' }
+			{ src: 'TurnDownForWhat.ogg', id: 'wantedDead' },
+			{ src: 'wormhole.ogg', id: 'wormhole' },
+			{ src: 'teleportation.ogg', id: 'teleportation' }
 		], 'sounds/');
 	},
 
@@ -27,6 +29,14 @@ SoundEngine.prototype = {
 
 	wantedDead : function() {
 		Sound.play('wantedDead');
+	},
+
+	wormholeCreated : function() {
+		Sound.play('wormhole');
+	},
+
+	teleportation : function() {
+		Sound.play('teleportation');
 	},
 
 	playBackgroundMusic : function() {

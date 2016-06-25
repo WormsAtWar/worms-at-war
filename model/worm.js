@@ -18,6 +18,8 @@ module.exports = function Worm(id, nickname) {
 	this.color = color.randomColor();
 	this.glasses = false;
 	this.kills = 0;
+	this.wormholeAvailable = false;
+	this.wormholeCreated = false;
 	this.lastUpdate = null;
 
 	this.deltaDisplacement = 15;
@@ -73,6 +75,7 @@ module.exports = function Worm(id, nickname) {
 
 	this.eat = function(food) {
 		this.score += food.points;
+		this.wormholeAvailable = !this.wormholeCreated && this.score >= 100;
 	};
 
 	this.nitro = function(food) {
@@ -90,6 +93,10 @@ module.exports = function Worm(id, nickname) {
 	this.collectBounty = function(worm) {
 		this.eat(new Food(null, 0, 0, null, worm.kills * 100));
 		this.putOnTheGlasses();
+	};
+
+	this.collideWormhole = function(wormhole) {
+		return this.head.collide(wormhole);
 	};
 
 	this.collideFood = function(food) {
@@ -123,6 +130,7 @@ function WormHead(x, y) {
 	this.x = x;
 	this.y = y;
 	this.rotation = 0;
+	this.displacement;
 	this.boundary = new CircularBoundary(this.x, this.y, 23);
 
 
@@ -142,6 +150,7 @@ function WormHead(x, y) {
 		var newPosition = Vector.sum(this.vectorizedPosition(), displacement);
 		this.x = newPosition.x;
 		this.y = newPosition.y;
+		this.displacement = displacement;
 		this.boundary.update(this);
 	};
 

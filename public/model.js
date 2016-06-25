@@ -21,6 +21,7 @@ Model.prototype = {
 		this.foods = new Array();
 		this.wanted = null;
 		this.topTen = new Array();
+		this.wormholes = new Array();
 	},
 
 	notifyLoginSuccess : function() {
@@ -46,6 +47,19 @@ Model.prototype = {
 	notifyWantedDead : function(id) {
 		this.soundsObserver.wantedDead();
 		this.renderObserver.putOnGlasses(id);
+	},
+
+	notifyWormholeCreated : function(id) {
+		this.soundsObserver.wormholeCreated();
+		this.renderObserver.createWormhole(id);
+	},
+
+	notifyNewWormhole : function(id) {
+		this.renderObserver.createWormhole(id);
+	},
+
+	notifyTeleportation : function() {
+		this.soundsObserver.teleportation();
 	},
 
 	notifyDead : function() {

@@ -21,6 +21,7 @@ RenderEngine.prototype = {
 		this.worm = null;
 		this.otherWorms = new Array();
 		this.foods = new Array();
+		this.wormholes = new Array();
 
 		this.hud = null;
 
@@ -34,6 +35,7 @@ RenderEngine.prototype = {
 		this.worldContainer = new Container();
 		this.foodContainer = new Container();
 		this.otherWormsContainer = new Container();
+		this.wormholesContainer = new Container()
 		this.hudContainer = new Container();
 
 		this.initWorldContainer();
@@ -46,7 +48,8 @@ RenderEngine.prototype = {
 	initWorldContainer : function() {
 		this.createWorldBackground();
 		this.worldContainer.addChild(this.foodContainer);
-		this.worldContainer.addChild(this.otherWormsContainer);
+		this.worldContainer.addChild(this.wormholesContainer);
+		this.worldContainer.addChild(this.otherWormsContainer);		
 		this.worldContainer.regX = -500;
 		this.worldContainer.regY = -300;
 	},
@@ -101,6 +104,7 @@ RenderEngine.prototype = {
 		this.createWorm();
 		this.createOtherWorms();
 		this.createFoods();
+		this.createWormholes();
 		this.createHUD();
 		this.stage.update();
 	},
@@ -108,6 +112,7 @@ RenderEngine.prototype = {
 	renderFrame : function() {
 		this.renderWorm();
 		this.renderOtherWorms();
+		this.renderWormholes();
 		this.renderHUD();
 		this.stage.update();
 	},
@@ -128,6 +133,12 @@ RenderEngine.prototype = {
 	moveCamera : function() {
 		this.worldContainer.x = -Model.worm.x;
 		this.worldContainer.y = -Model.worm.y;
+	},
+
+	renderWormholes : function() {
+		for(var i = 0; i < this.wormholes.length; i++) {
+			this.wormholes[i].render();
+		}
 	},
 
 	renderHUD : function() {
@@ -159,6 +170,17 @@ RenderEngine.prototype = {
 
 	createFood : function(id) {
 		this.foods.push(new FoodShape(this.foodContainer, id));
+	},
+
+	createWormholes : function() {
+		for(var i = 0; i < Model.wormholes.length; i++) {
+			var wormhole = Model.wormholes[i];
+			this.createWormhole(wormhole.id);
+		}
+	},
+
+	createWormhole : function(id) {
+		this.wormholes.push(new WormholeShape(this.wormholesContainer, id));
 	},
 
 	createHUD : function() {
@@ -381,6 +403,80 @@ FoodShape.prototype = {
 
 	remove : function() {
 		this.container.removeChild(this.halo, this.core);
+	},
+
+};
+
+
+
+
+
+var WormholeShape = function(container, id) {
+	this.container = container;
+
+	this.id = id;
+	this.wormhole = Model.wormholes.get(id);
+
+	this.origin;
+	this.destiny;
+
+	this.create();
+};
+
+WormholeShape.prototype = {
+
+	create : function() {
+		this.createOrigin();
+		this.createDestiny();
+	},
+
+	createOrigin : function() {
+		var wormhole = new Shape();
+		var wormholeImage = new Image();
+
+		wormholeImage.onload = function(){
+		     wormhole.graphics.beginBitmapFill(wormholeImage, 'no-repeat');
+		     wormhole.graphics.drawRect(0, 0, 150, 150);
+		}
+		wormholeImage.src = 'images/wormhole.png';
+		this.origin = wormhole;
+		this.origin.set({
+			regX: 75,
+			regY: 75,
+			x: this.wormhole.origin.x, 
+			y: this.wormhole.origin.y,
+		});
+		this.container.addChild(this.origin);
+		Tween.get(this.origin).to({ alpha: 1 }, 500);
+	},
+
+	createDestiny : function() {
+		var wormhole_exit = new Shape();
+		var wormholeImage = new Image();
+
+		wormholeImage.onload = function(){
+		     wormhole_exit.graphics.beginBitmapFill(wormholeImage, 'no-repeat');
+		     wormhole_exit.graphics.drawRect(0, 0, 100, 100);
+		}
+		wormholeImage.src = 'images/wormhole_exit.png';
+		this.destiny = wormhole_exit;
+		this.destiny.set({
+			alpha: 0,
+			regX: 50,
+			regY: 50,
+			x: this.wormhole.destiny.x, 
+			y: this.wormhole.destiny.y,
+		});
+		this.container.addChild(this.destiny);
+		Tween.get(this.destiny).to({ alpha: 1 }, 500);
+	},
+
+	render : function() {
+		this.origin.rotation++;
+	},
+
+	remove : function() {
+		this.container.removeChild(this.origin, this.destiny);
 	},
 
 };
