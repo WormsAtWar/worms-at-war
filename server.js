@@ -195,7 +195,7 @@ io.sockets.on('connection', function(socket) {
 	function onWormholeCreation(data) {
 		var myWorm = worms.get(myID);
 		
-		if(myWorm.wormholeAvailable) {
+		if(myWorm.wormholeAvailable()) {
 			var wormhole = new Wormhole(wormholeID, myWorm); 
 			wormholes.push(wormhole);
 			myWorm.wormholeCreated = true;

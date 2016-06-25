@@ -124,10 +124,12 @@ stage.addEventListener('stagemouseup', function() {
 	IO.socket.emit('slowDown', null);
 });
 
-$(document).on("keypress", function (key) {
-    if(key.which == 32) {
-    	IO.socket.emit('wormholeCreation', null);
-    }
+$(document).on("keydown", function (key) {
+	setTimeout(function() {
+	    if(key.which == 32 && status == 'success') {
+	    	IO.socket.emit('wormholeCreation', null);
+	    }
+	}, 1000);
 });
 
 var Render = new RenderEngine(stage);

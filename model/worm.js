@@ -18,7 +18,6 @@ module.exports = function Worm(id, nickname) {
 	this.color = color.randomColor();
 	this.glasses = false;
 	this.kills = 0;
-	this.wormholeAvailable = false;
 	this.wormholeCreated = false;
 	this.lastUpdate = null;
 
@@ -75,7 +74,6 @@ module.exports = function Worm(id, nickname) {
 
 	this.eat = function(food) {
 		this.score += food.points;
-		this.wormholeAvailable = !this.wormholeCreated && this.score >= 100;
 	};
 
 	this.nitro = function(food) {
@@ -93,6 +91,10 @@ module.exports = function Worm(id, nickname) {
 	this.collectBounty = function(worm) {
 		this.eat(new Food(null, 0, 0, null, worm.kills * 100));
 		this.putOnTheGlasses();
+	};
+
+	this.wormholeAvailable = function() {
+		return !this.wormholeCreated && this.score >= 100;
 	};
 
 	this.collideWormhole = function(wormhole) {

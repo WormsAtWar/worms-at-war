@@ -196,8 +196,10 @@ RenderEngine.prototype = {
 	},
 
 	removeFood : function(id) {
-		this.foods.get(id).remove();
-		this.foods.remove(id);
+		if(this.foods.get(id)) {
+			this.foods.get(id).remove();
+			this.foods.remove(id);
+		}
 	},
 
 	removeWorm : function(id) {
@@ -339,7 +341,7 @@ WormShape.prototype = {
 	},
 
 	remove : function() {
-		this.container.removeChild(this.head, this.nickname);
+		this.container.removeChild(this.head, this.nickname, this.glasses);
 		for(var i = 0; i < this.segments.length; i++) {
 			this.container.removeChild(this.segments[i]);
 		}
@@ -774,7 +776,7 @@ TTRow.prototype = {
 
 	createNick : function() {
 		var worm = Model.topTen[this.index];
-		this.nickname = new Text(worm.nickname, '14px sans-serif', worm.color);
+		this.nickname = new Text(this.normalizedNick(worm.nickname), '14px sans-serif', worm.color);
 		this.nickname.set({
 			x: 830,
 			y: 20 + 14*this.index,
@@ -791,6 +793,10 @@ TTRow.prototype = {
 			y: 20 + 14*this.index,
 		});
 		this.container.addChild(this.score);
+	},
+
+	normalizedNick : function(nickname) {
+		return nickname.length > 13 ? nickname.slice(0, 10) + "..." : nickname;
 	},
 
 	remove : function() {

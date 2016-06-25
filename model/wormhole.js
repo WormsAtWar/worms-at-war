@@ -9,7 +9,7 @@ module.exports = function Wormhole(id, worm) {
 	this.destiny;
 
 	this.setOrigin = function(worm) {
-		var originPosition = Vector.sum(worm.head.vectorizedPosition(), Vector.scl(worm.head.displacement, 200));
+		var originPosition = Vector.sum(worm.head.vectorizedPosition(), Vector.scl(worm.head.displacement, 150));
 		this.origin = {
 			x: originPosition.x,
 			y: originPosition.y,
