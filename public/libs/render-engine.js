@@ -236,6 +236,7 @@ var WormShape = function(container, id) {
 
 	this.head;
 	this.segments = new Array();
+	this.halo = new Array();
 	this.nickname;
 	this.glasses;
 
@@ -258,10 +259,27 @@ WormShape.prototype = {
 
 	create : function() {
 		this.updateWorm();
+		this.createWantedHalo();
 		this.createBody();
 		this.createHead();
 		this.renderGlasses();
 		this.createNick();
+	},
+
+	createWantedHalo : function() {
+		if(Model.wanted && Model.wanted.id == this.worm.id) {
+			for(var i = this.worm.segments.length-1; i > 0; i--) {
+				var segment = this.worm.segments[i];
+				this.halo[i] = new Shape();
+				this.halo[i].graphics.beginRadialGradientFill(['yellow','rgba(0,0,0,0)'], [0.2, 1], 0, 0, 0, 0, 0, 45)
+										.drawCircle(0, 0, 45);
+				this.halo[i].set({
+					x: this.id != null ? segment.x : segment.x - this.worm.x + 500,
+					y: this.id != null ? segment.y : segment.y - this.worm.y + 300
+				});
+				this.container.addChild(this.halo[i]);
+			}
+		}
 	},
 
 	createBody : function() {
@@ -360,7 +378,11 @@ WormShape.prototype = {
 		for(var i = 0; i < this.segments.length; i++) {
 			this.container.removeChild(this.segments[i]);
 		}
+		for(var i = 0; i < this.halo.length; i++) {
+			this.container.removeChild(this.halo[i]);
+		}
 		this.segments = new Array();
+		this.halo = new Array();
 	},
 
 };
