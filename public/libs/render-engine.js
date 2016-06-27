@@ -4,6 +4,7 @@ var Stage = createjs.Stage;
 var Container = createjs.Container;
 var Graphics = createjs.Graphics;
 var Shape = createjs.Shape;
+var Bitmap = createjs.Bitmap;
 var Text = createjs.Text;
 var Ticker = createjs.Ticker;
 var Tween = createjs.Tween;
@@ -37,9 +38,9 @@ RenderEngine.prototype = {
 		this.otherWormsContainer = new Container();
 		this.wormholesContainer = new Container()
 		this.hudContainer = new Container();
-
-		this.initWorldContainer();
 		
+		this.initWorldContainer();
+
 		this.stage.addChild(this.worldContainer);
 		this.stage.addChild(this.wormContainer);
 		this.stage.addChild(this.hudContainer);
@@ -195,6 +196,11 @@ RenderEngine.prototype = {
 		}
 	},
 
+	removeWormhole : function(id) {
+		this.wormholes.get(id).remove();
+		this.wormholes.remove(id);
+	},
+
 	removeFood : function(id) {
 		if(this.foods.get(id)) {
 			this.foods.get(id).remove();
@@ -205,6 +211,11 @@ RenderEngine.prototype = {
 	removeWorm : function(id) {
 		this.otherWorms.get(id).remove();
 		this.otherWorms.remove(id);
+	},
+
+	dead : function() {
+		this.stopRenderWorm();
+		this.hud.dead();
 	},
 
 	stopRenderWorm : function() {
@@ -261,8 +272,11 @@ WormShape.prototype = {
 
 	createSegment : function(index) {
 		var segment = this.worm.segments[index];
+		var colorEffect = this.worm.onSpeed ? 'white' : 'black';
+
 		this.segments[index] = new Shape();
-		this.segments[index].graphics.beginFill(this.worm.color).drawCircle(0, 0, 20);
+		this.segments[index].graphics.beginRadialGradientFill([this.worm.color, colorEffect], [0, 1], -5, 0, 10, 0, 0, 35)
+										.drawCircle(0, 0, 20);
 		this.segments[index].set({
 			x: this.id != null ? segment.x : segment.x - this.worm.x + 500,
 			y: this.id != null ? segment.y : segment.y - this.worm.y + 300
@@ -272,8 +286,11 @@ WormShape.prototype = {
 	},
 
 	createHead : function() {
+		var colorEffect = this.worm.onSpeed ? 'white' : 'black';
+
 		this.head = new Shape();
-		this.head.graphics.beginFill(this.worm.color).drawCircle(0, 0, 23);
+		this.head.graphics.beginRadialGradientFill([this.worm.color, colorEffect], [0, 1], -10, 0, 10, 0, 5, 35)
+							.drawCircle(0, 0, 23);
 		this.createEyes();
 		this.head.set({
 			x: this.id != null ? this.worm.x : 500,
@@ -285,25 +302,19 @@ WormShape.prototype = {
 	},
 
 	createEyes : function() {
-		this.head.graphics.setStrokeStyle(2, 'square')
+		if(!this.worm.glasses || this.withoutGlasses()) {
+			this.head.graphics.setStrokeStyle(2, 'square')
 							.beginStroke('#000000')
-							.beginFill('white').drawCircle(11, -15, 10)
-							.beginFill('white').drawCircle(11, 15, 10)
-							.beginFill('black').drawCircle(14, -15, 4)
-							.beginFill('black').drawCircle(14, 15, 4)
+							.beginFill('white').drawCircle(10, -15, 10)
+							.beginFill('white').drawCircle(10, 15, 10)
+							.beginFill('black').drawCircle(13, -15, 4)
+							.beginFill('black').drawCircle(13, 15, 4)
 							.endStroke();
+		}
 	},
 
 	createGlasses : function() {
-		var glasses = new Shape();
-		var glassesImage = new Image();
-
-		glassesImage.onload = function(){
-		     glasses.graphics.beginBitmapFill(glassesImage, 'no-repeat');
-		     glasses.graphics.drawRect(0, 0, 20, 65);
-		}
-		glassesImage.src = 'images/glasses.png';
-		this.glasses = glasses;
+		this.glasses = new Bitmap('images/glasses.png');
 		this.glasses.set({
 			alpha: 0,
 			regY: 32.5,
@@ -338,6 +349,10 @@ WormShape.prototype = {
 			y: this.head.y
 		});
 		this.container.addChild(this.nickname);
+	},
+
+	withoutGlasses : function() {
+		return !this.worm.glasses || !(this.glasses && this.glasses.alpha == 1);
 	},
 
 	remove : function() {
@@ -433,16 +448,9 @@ WormholeShape.prototype = {
 	},
 
 	createOrigin : function() {
-		var wormhole = new Shape();
-		var wormholeImage = new Image();
-
-		wormholeImage.onload = function(){
-		     wormhole.graphics.beginBitmapFill(wormholeImage, 'no-repeat');
-		     wormhole.graphics.drawRect(0, 0, 150, 150);
-		}
-		wormholeImage.src = 'images/wormhole.png';
-		this.origin = wormhole;
+		this.origin = new Bitmap('images/wormhole.png');
 		this.origin.set({
+			alpha: 0,
 			regX: 75,
 			regY: 75,
 			x: this.wormhole.origin.x, 
@@ -453,15 +461,7 @@ WormholeShape.prototype = {
 	},
 
 	createDestiny : function() {
-		var wormhole_exit = new Shape();
-		var wormholeImage = new Image();
-
-		wormholeImage.onload = function(){
-		     wormhole_exit.graphics.beginBitmapFill(wormholeImage, 'no-repeat');
-		     wormhole_exit.graphics.drawRect(0, 0, 100, 100);
-		}
-		wormholeImage.src = 'images/wormhole_exit.png';
-		this.destiny = wormhole_exit;
+		this.destiny = new Bitmap('images/wormhole_exit.png');
 		this.destiny.set({
 			alpha: 0,
 			regX: 50,
@@ -478,7 +478,18 @@ WormholeShape.prototype = {
 	},
 
 	remove : function() {
-		this.container.removeChild(this.origin, this.destiny);
+		Tween.get(this.origin)
+			.to({ alpha: 0 }, 1000)
+			.call(function() {
+		    	this.container.removeChild(this.origin);
+		    },
+		[], this);
+		Tween.get(this.destiny)
+			.to({ alpha: 0 }, 1000)
+			.call(function() {
+		    	this.container.removeChild(this.destiny);
+		    },
+		[], this);
 	},
 
 };
@@ -497,6 +508,7 @@ HUD.prototype = {
 
 	init : function() {
 
+		this.opaqueLayer;
 		this.elements = new Array();
 		this.createElements();
 	},
@@ -528,6 +540,14 @@ HUD.prototype = {
 
 	createRanking : function() {
 		this.elements.push(new Ranking(this.container));
+	},
+
+	dead : function() {
+		this.opaqueLayer = new Shape();
+		this.opaqueLayer.graphics.beginFill('black').drawRect(0, 0, 1000, 600);
+		this.opaqueLayer.alpha = 0;
+		this.container.addChild(this.opaqueLayer);
+		Tween.get(this.opaqueLayer).to({ alpha: 0.8 }, 1500);
 	},
 
 };
@@ -642,9 +662,9 @@ Minimap.prototype = {
 		if(Model.wanted && Model.wanted.id != Model.worm.id) {
 			var coords = this.traslateCoords(Model.wanted);
 			this.wantedBlip = new Shape();
-			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 4);
-			this.wantedBlip.graphics.beginFill('white').drawCircle(0, 0, 3);
-			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 2);
+			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 4)
+									.beginFill('white').drawCircle(0, 0, 3)
+									.beginFill('red').drawCircle(0, 0, 2);
 			this.wantedBlip.set({
 				x: coords.x,
 				y: coords.y

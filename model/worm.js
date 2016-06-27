@@ -15,6 +15,7 @@ module.exports = function Worm(id, nickname) {
 	this.rank;
 	this.head;
 	this.segments = new FIFOArray();
+	this.onSpeed = false;
 	this.color = color.randomColor();
 	this.glasses = false;
 	this.kills = 0;

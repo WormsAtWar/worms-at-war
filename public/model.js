@@ -62,10 +62,14 @@ Model.prototype = {
 		this.soundsObserver.teleportation();
 	},
 
+	notifyWormholeCollapsed : function(id) {
+		this.renderObserver.removeWormhole(id);
+	},
+
 	notifyDead : function() {
 		this.soundsObserver.stopBackgroundMusic();
 		this.soundsObserver.death();
-		this.renderObserver.stopRenderWorm();
+		this.renderObserver.dead();
 	},
 
 	notifyAfterDeadEnds : function() {

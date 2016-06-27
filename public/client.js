@@ -29,6 +29,7 @@ var IO = {
 		IO.socket.on('wormholeCreated', IO.onWormholeCreated);
 		IO.socket.on('newWormhole', IO.onNewWormhole);
 		IO.socket.on('teleportation', IO.onTeleportation);
+		IO.socket.on('wormholeCollapsed', IO.onWormholeCollapsed);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
@@ -101,6 +102,11 @@ var IO = {
 		Model.notifyTeleportation();
 	},
 
+	onWormholeCollapsed : function(id) {
+		Model.wormholes.remove(id);
+		Model.notifyWormholeCollapsed(id);
+	},
+
 	onOtherWormDisconnect : function(id) {
 		Model.otherWorms.remove(id);
 		Model.notifyWormDisconnect(id);
@@ -113,6 +119,10 @@ var IO = {
 // GAME ENGINE //
 /////////////////
 
+var Key = {
+	SPACE: 32,
+}
+
 var canvas = $("#gameCanvas").get(0);
 var stage = new Stage(canvas);
 
@@ -124,12 +134,10 @@ stage.addEventListener('stagemouseup', function() {
 	IO.socket.emit('slowDown', null);
 });
 
-$(document).on("keydown", function (key) {
-	setTimeout(function() {
-	    if(key.which == 32 && status == 'success') {
-	    	IO.socket.emit('wormholeCreation', null);
-	    }
-	}, 1000);
+$(window).keydown(function(key) {
+    if(key.which == Key.SPACE && status == 'success') {
+    	IO.socket.emit('wormholeCreation', null);
+    }
 });
 
 var Render = new RenderEngine(stage);
@@ -147,7 +155,7 @@ var frame = 1;
 Ticker.addEventListener('tick', function(event) {
 	if(status == 'success') {
 		Render.renderFrame();
-		if(frame == 15) { // destiny update rate limited to 4 times per second
+		if(frame == 10) { // destiny update rate limited to 6 times per second
 			destinyUpdate();
 			frame = 1;
 		} else {

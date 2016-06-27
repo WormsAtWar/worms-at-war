@@ -2,9 +2,9 @@ var Vector = require('v2d');
 
 var CircularBoundary = require('./circular-boundary');
 
-module.exports = function Wormhole(id, worm) {
+module.exports = function Wormhole(worm) {
 	
-	this.id = id;
+	this.id = worm.id;
 	this.origin;
 	this.destiny;
 
