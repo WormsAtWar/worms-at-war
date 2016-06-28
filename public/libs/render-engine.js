@@ -546,6 +546,7 @@ HUD.prototype = {
 		this.createWantedText();
 		this.createMinimap();
 		this.createRanking();
+		this.createWormholeHUD();
 	},
 
 	createScoreText : function() {
@@ -562,6 +563,10 @@ HUD.prototype = {
 
 	createRanking : function() {
 		this.elements.push(new Ranking(this.container));
+	},
+
+	createWormholeHUD : function() {
+		this.elements.push(new WormholeHUD(this.container));
 	},
 
 	dead : function() {
@@ -843,6 +848,77 @@ TTRow.prototype = {
 
 	remove : function() {
 		this.container.removeChild(this.position, this.nickname, this.score);
+	},
+
+};
+
+
+
+
+
+var WormholeHUD = function(container) {
+	this.container = container;
+
+	this.tip;
+	this.icon;
+	this.iconOpaque;
+	this.availability;
+	this.create();
+};
+
+WormholeHUD.prototype = {
+
+	create : function() {
+		this.createTip();
+		this.createIcon();
+		this.createAvailability();
+	},
+
+	createTip : function() {
+		this.tip = new Text("", 'bold 12px sans-serif', 'cyan');
+		this.tip.set({
+			x: 20,
+			y: 570,
+		});
+		this.container.addChild(this.tip);
+	},
+
+	createIcon : function() {
+		this.icon = new Bitmap('images/wormhole_icon.png');
+		this.icon.set({
+			x: 900,
+			y: 460,
+		});
+		this.container.addChild(this.icon);
+	},
+
+	createAvailability : function() {
+		this.availability = new Text("", 'bold 9px sans-serif', 'cyan');
+		this.availability.set({
+			x: 935,
+			y: 470,
+		});
+		this.container.addChild(this.availability);
+	},
+
+	render : function() {
+		this.tip.text = Model.wormholeAvailable() ? "Press Space to create Wormhole!" : "";
+		this.availability.text = Model.wormholeAvailable() ? "Available" : "";
+		this.renderIconOpaque();
+	},
+
+	renderIconOpaque : function() {
+		var height = !Model.worm.wormholeCreated ? 30 - (30 * Model.worm.score) / 100 : 30;
+
+		this.container.removeChild(this.iconOpaque);
+		this.iconOpaque = new Shape();
+		this.iconOpaque.graphics.beginFill('black').drawRect(900, 460, 30, height);
+		this.iconOpaque.alpha = 0.85;
+		this.container.addChild(this.iconOpaque);
+	},
+
+	remove : function() {
+		this.container.removeChild(this.tip, this.icon, this.iconOpaque, this.availability);
 	},
 
 };

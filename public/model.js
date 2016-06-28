@@ -85,4 +85,8 @@ Model.prototype = {
 		return this.otherWorms.length + 1;
 	},
 
+	wormholeAvailable : function() {
+		return !this.worm.wormholeCreated && this.worm.score >= 100;
+	},
+
 };
