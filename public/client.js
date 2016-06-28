@@ -68,10 +68,10 @@ var IO = {
 	onDead : function(data) {
 		Model.notifyDead();
 		setTimeout(function() {
-			status = 'waiting';
 			lastScore = Model.worm.score;
 			lastRank = Model.worm.rank;
 			Model.reset();
+			status = 'waiting';
 			Model.notifyAfterDeadEnds();
 		}, 3000);
 	},
@@ -179,16 +179,27 @@ function destinyUpdate() {
 ///////////////////////////////////////////////
 
 function login() {
-	var nickname = $("#nicknameInput").val() || '';
-	
+	var loginData = {
+		nickname: $("#nicknameInput").val() || '',
+		color: $('#loginForm').colorpicker('getValue')
+	};
+
 	IO.init();
 	
-	IO.socket.emit('wormLogin', nickname);
+	IO.socket.emit('wormLogin', loginData);
 }
 
 
 Render.showLoginStage();
 
+
+$(function() { 
+	$('#loginForm').colorpicker({
+		color: '#FF0000',
+		format: 'hex',
+		input: false
+	});
+});
 
 
 ///////////////////////////////////////////////

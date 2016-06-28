@@ -152,8 +152,8 @@ io.sockets.on('connection', function(socket) {
 	}
 
 
-	function onWormLogin(nickname) {
-		var worm = new Worm(wormID, nickname);
+	function onWormLogin(data) {
+		var worm = new Worm(wormID, data.nickname, data.color);
 
 		myID = wormID;
 
