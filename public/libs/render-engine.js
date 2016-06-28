@@ -912,7 +912,7 @@ WormholeHUD.prototype = {
 
 		this.container.removeChild(this.iconOpaque);
 		this.iconOpaque = new Shape();
-		this.iconOpaque.graphics.beginFill('black').drawRect(900, 460, 30, height);
+		this.iconOpaque.graphics.beginFill('black').drawRect(900, 460, 30, height > 0 ? height : 0);
 		this.iconOpaque.alpha = 0.85;
 		this.container.addChild(this.iconOpaque);
 	},
