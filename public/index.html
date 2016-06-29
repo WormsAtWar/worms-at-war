@@ -6,6 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-toggle.min.css">
 	<link rel="stylesheet" type="text/css" href="libs/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+	<link rel="stylesheet" href="css/unslider.css">
 	<link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 
@@ -19,31 +20,48 @@
 			</div>
 			<div id="logo" class="logo hidden-div">
 				<img src="images/wawlogo.png">
+				<div class="tips" style="width: 50%; margin: 0 auto; background-color: indigo; color: white;">
+					<ul>
+						<li>Solo Play: play as a lone wolf worm...</li>
+						<li>Team Play: play with your fellow worms...</li>
+						<li>When you enter a Wormhole, you'll teleport to another place in space!</li>
+						<li>If the Team doesn't exist, you can create it!</li>
+						<li>Bounty Hunter: you must kill the most wanted to collect his booty...</li>
+						<li>When you create a team, it will have the color you chose..</li>
+						<li>You can create a wormhole when you reach 100 points!</li>
+						<li>Your fellow worms are shown on your radar...</li>
+						<li>If the Team exist, you can join it!</li>
+						<li>Press Space to create Wormhole!</li>
+						<li>The worm with more kills will be the most wanted</li>
+						<li>Hold down Left-Click to speed up!</li>
+						<li>The most wanted is shown on your radar...</li>
+						<li>When you kill the most wanted, you'll die laughing! :P See it..</li>
+					</ul>
+				</div>
 			</div>
 			<div id="login" class="login hidden-div form-group has-warning">
-
-				<div class="panel with-nav-tabs panel-warning">
+				<div class="panel with-nav-tabs panel-info panel-transparent">
 					<div class="panel-heading">
 							<ul class="nav nav-pills nav-justified">
-								<li class="active"><button href="#tab1default" class="btn btn-block btn-lg btn-warning rounded-left" data-toggle="tab">Solo Play</button></li>
-								<li><button href="#tab2default" class="btn btn-block btn-lg btn-warning rounded-right" data-toggle="tab">Team Play</button></li>
+								<li class="active"><button href="#soloPlay" class="btn btn-block btn-lg btn-warning rounded-left" data-toggle="tab">Solo Play</button></li>
+								<li><button href="#teamPlay" class="btn btn-block btn-lg btn-warning rounded-right" data-toggle="tab">Team Play</button></li>
 								
 							</ul>
 					</div>
 					<div class="panel-body">
 						<div class="tab-content">
-							<div class="tab-pane fade in active" style="height: 130px;" id="tab1default">
+							<div class="tab-pane fade in active" style="height: 130px;" id="soloPlay">
 								<div id="loginSoloForm" class="input-group input-group-lg colorpicker-component" >
-									<input id="nicknameSoloInput" class="form-control" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter nickname here..."></input>
-									<span class="input-group-addon" style="border: 3px solid #f0ad4e;"><i></i></span>
+									<input id="nicknameSoloInput" class="form-control" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter nickname here..."></input>
+									<span class="input-group-addon" style="border: 1px solid #f0ad4e;"><i></i></span>
 								</div>
 								<button type="button" onclick="loginSolo()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
 							</div>
-							<div class="tab-pane fade" style="height: 130px;" id="tab2default">
-								<input id="nicknameTeamInput" class="form-control input-lg" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter nickname here..."></input>
+							<div class="tab-pane fade" style="height: 130px;" id="teamPlay">
+								<input id="nicknameTeamInput" class="form-control input-lg" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter your nickname here..."></input>
 								<div id="loginTeamForm" class="input-group input-group-lg colorpicker-component" >
-									<input id="teamInput" class="form-control" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter your team name here..."></input>
-									<span class="input-group-addon" style="border: 3px solid #f0ad4e;"><i></i></span>
+									<input id="teamInput" class="form-control" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter your team name here..."></input>
+									<span class="input-group-addon" style="border: 1px solid #f0ad4e;"><i></i></span>
 								</div>
 								<button type="button" onclick="loginTeam()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
 							</div>
@@ -58,16 +76,30 @@
 		</div>
 	</div>
 	<!-- SCRIPTS -->
-	<script type="text/javascript" src="libs/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="libs/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="libs/bootstrap.min.js"></script>
 	<script type="text/javascript" src="libs/bootstrap-toggle.min.js"></script>
 	<script type="text/javascript" src="libs/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+	<script type="text/javascript" src="libs/unslider-min.js"></script>
 	<script type="text/javascript" src="libs/createjs-2015.11.26.min.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="libs/render-engine.js"></script>
 	<script type="text/javascript" src="libs/sound-engine.js"></script>
 	<script type="text/javascript" src="model.js"></script>
 	<script type="text/javascript" src="client.js"></script>
-	
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$('.tips').unslider({
+				autoplay: true,
+				infinite: true,
+				delay: 5000,
+				speed: 2000,
+				arrows: false,
+				nav: false,
+				index: Math.floor(Math.random() * 4),
+			});
+		});
+	</script>
+
 </body>
 </html>

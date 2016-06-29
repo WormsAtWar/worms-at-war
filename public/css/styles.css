@@ -40,7 +40,7 @@
 }
 
 .login {
-	width: 300px; 
+	width: 400px; 
 	margin: 0 auto; 
 	text-align: center;
 }
@@ -63,4 +63,19 @@
 
 .last-stat {
 	color: indigo;
+}
+
+.panel-transparent {
+	background: none!important;
+	border: 0px solid transparent!important;
+}
+
+.panel-transparent .panel-heading{
+	background: none!important;
+	border: 0px solid transparent!important;
+}
+
+.panel-transparent .panel-body{
+	background: none!important;
+	border: 0px solid transparent!important;
 }
