@@ -90,4 +90,12 @@ Model.prototype = {
 		return !this.worm.wormholeCreated && this.worm.score >= 100;
 	},
 
+	isMostWanted : function(worm) {
+		return Model.wanted && worm.id == model.wanted.id;
+	},
+
+	wantedNotTeamMember : function() {
+		return Model.team && Model.wanted && !Model.team.members.includes(Model.wanted.id);
+	},
+
 };

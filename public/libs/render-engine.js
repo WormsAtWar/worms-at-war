@@ -715,7 +715,7 @@ Minimap.prototype = {
 	}, 
 
 	createWantedBlip : function() {
-		if(Model.wanted && Model.wanted.id != Model.worm.id) {
+		if(Model.wantedNotTeamMember()) {
 			var coords = this.traslateCoords(Model.wanted);
 			this.wantedBlip = new Shape();
 			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 4)
