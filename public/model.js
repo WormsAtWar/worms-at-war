@@ -18,6 +18,7 @@ Model.prototype = {
 	reset : function() {
 		this.worm = null;
 		this.otherWorms = new Array();
+		this.team = null;
 		this.foods = new Array();
 		this.wanted = null;
 		this.topTen = new Array();

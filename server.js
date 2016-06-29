@@ -9,6 +9,7 @@ require('./model/utils/extend-module').extendArray();
 var Worm = require('./model/worm');
 var Food = require('./model/food');
 var Wormhole = require('./model/wormhole');
+var Team = require('./model/team');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -24,6 +25,7 @@ server.listen(process.env.PORT || 3000, function() {
 var wormID = 0;
 var worms = new Array();
 var ranking = new Array();
+var teams = new Array();
 
 var foodID = 0;
 var foodMax = 300;
@@ -153,11 +155,23 @@ io.sockets.on('connection', function(socket) {
 
 
 	function onWormLogin(data) {
-		var worm = new Worm(wormID, data.nickname, data.color);
 
 		myID = wormID;
 
-		socket.emit('loginSuccess', { worm: worm, otherWorms: worms, foods: foods, wormholes: wormholes });
+		if(data.teamname) {
+			if(teams.get(data.teamname)) {
+				teams.get(data.teamname).addMember(myID);
+			} else {
+				teams.push(new Team(data.teamname, myID, data.color));
+			}
+			socket.broadcast.emit('teamUpdate', teams.get(data.teamname));
+		}
+
+		var color = data.teamname ? teams.get(data.teamname).color : data.color;
+
+		var worm = new Worm(wormID, data.nickname, color, data.teamname);
+
+		socket.emit('loginSuccess', { worm: worm, otherWorms: worms, foods: foods, wormholes: wormholes, team: teams.get(data.teamname) });
 
 		worms.push(worm);
 
@@ -208,12 +222,25 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function onDisconnect(data) {
+		var myWorm = worms.get(myID);
+
 		clearInterval(gameLoopID);
 		clearInterval(nitroLoopID);
 
 		if(wormholes.get(myID)) {
 			wormholes.removeByID(myID);
 			io.sockets.emit('wormholeCollapsed', myID);
+		}
+
+
+		if(myWorm.team) {
+			var team = teams.get(myWorm.team);
+			team.removeMember(myWorm.id);
+			if(team.member.length > 0) {
+				socket.broadcast.emit('teamUpdate', team);
+			} else {
+				teams.removeByID(team.id);				
+			}
 		}
 
 		worms.removeByID(myID);

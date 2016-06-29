@@ -649,6 +649,7 @@ var Minimap = function(container) {
 
 	this.frame;
 	this.wormBlip;
+	this.teamBlips = new Array();
 	this.wantedBlip;
 	this.create();
 };
@@ -658,6 +659,7 @@ Minimap.prototype = {
 	create : function() {
 		this.createFrame();
 		this.createWormBlip();
+		this.createTeamBlips();
 		this.createWantedBlip();
 	},
 
@@ -676,6 +678,7 @@ Minimap.prototype = {
 		var coords = this.traslateCoords(Model.worm);
 
 		this.wormBlip = new Shape();
+		this.wormBlip.graphics.beginFill('white').drawCircle(0, 0, 4);
 		this.wormBlip.graphics.beginFill(Model.worm.color).drawCircle(0, 0, 3);
 		this.wormBlip.set({
 			x: coords.x,
@@ -684,6 +687,32 @@ Minimap.prototype = {
 
 		this.container.addChild(this.wormBlip);
 	},
+
+	createTeamBlips : function() {
+		if(Model.team) {
+			for(var i = 0; i < Model.team.members.length; i++) {
+				if(Model.otherWorms.get(Model.team.members[i])) {
+					this.createMemberBlip(Model.team.members[i]);
+				}
+			}
+		}
+	},
+
+	createMemberBlip : function(id) {
+		var member = Model.otherWorms.get(id);
+		if(member) {
+			var coords = this.traslateCoords(member);
+
+			var memberBlip = new Shape();
+			memberBlip.graphics.beginFill(member.color).drawCircle(0, 0, 3);
+			memberBlip.set({
+				x: coords.x,
+				y: coords.y
+			});
+			this.teamBlips.push(memberBlip);
+			this.container.addChild(memberBlip);
+		}
+	}, 
 
 	createWantedBlip : function() {
 		if(Model.wanted && Model.wanted.id != Model.worm.id) {
@@ -702,6 +731,7 @@ Minimap.prototype = {
 
 	render : function() {
 		this.renderWormBlip();
+		this.renderTeamBlips();
 		this.renderWantedBlip();
 	},
 
@@ -711,6 +741,18 @@ Minimap.prototype = {
 			x: coords.x,
 			y: coords.y
 		});
+	},
+
+	renderTeamBlips : function() {
+		this.removeTeamBlips();
+		this.createTeamBlips();
+	},
+
+	removeTeamBlips : function() {
+		for(var i = 0; i < this.teamBlips.length; i++) {
+			this.container.removeChild(this.teamBlips[i]);
+		}
+		this.teamBlips = new Array();
 	},
 
 	renderWantedBlip : function() {

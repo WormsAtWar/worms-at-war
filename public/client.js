@@ -30,12 +30,14 @@ var IO = {
 		IO.socket.on('newWormhole', IO.onNewWormhole);
 		IO.socket.on('teleportation', IO.onTeleportation);
 		IO.socket.on('wormholeCollapsed', IO.onWormholeCollapsed);
+		IO.socket.on('teamUpdate', IO.onTeamUpdate);
 		IO.socket.on('otherWormDisconnect', IO.onOtherWormDisconnect);
 	},
 
 	onLoginSuccess : function(data) {
 		Model.worm = data.worm;
 		Model.otherWorms = data.otherWorms;
+		Model.team = data.team;
 		Model.foods = data.foods;
 		Model.wormholes = data.wormholes;
 		Model.notifyLoginSuccess();
@@ -105,6 +107,12 @@ var IO = {
 	onWormholeCollapsed : function(id) {
 		Model.wormholes.remove(id);
 		Model.notifyWormholeCollapsed(id);
+	},
+
+	onTeamUpdate : function(data) {
+		if(data && Model.team && data.id == Model.team.id){
+			Model.team = data;
+		}
 	},
 
 	onOtherWormDisconnect : function(id) {
@@ -178,10 +186,10 @@ function destinyUpdate() {
 
 ///////////////////////////////////////////////
 
-function login() {
+function loginSolo() {
 	var loginData = {
-		nickname: $("#nicknameInput").val() || '',
-		color: $('#loginForm').colorpicker('getValue')
+		nickname: $("#nicknameSoloInput").val() || '',
+		color: $('#loginSoloForm').colorpicker('getValue')
 	};
 
 	IO.init();
@@ -189,12 +197,28 @@ function login() {
 	IO.socket.emit('wormLogin', loginData);
 }
 
+function loginTeam() {
+	var loginData = {
+		nickname: $("#nicknameTeamInput").val() || '',
+		color: $('#loginTeamForm').colorpicker('getValue'),
+		teamname: $("#teamInput").val()
+	};
+
+	IO.init();
+	
+	IO.socket.emit('wormLogin', loginData);
+}
 
 Render.showLoginStage();
 
 
 $(function() { 
-	$('#loginForm').colorpicker({
+	$('#loginSoloForm').colorpicker({
+		color: '#FF0000',
+		format: 'hex',
+		input: false
+	});
+	$('#loginTeamForm').colorpicker({
 		color: '#FF0000',
 		format: 'hex',
 		input: false

@@ -21,15 +21,37 @@
 				<img src="images/wawlogo.png">
 			</div>
 			<div id="login" class="login hidden-div form-group has-warning">
-				<div id="loginForm" class="input-group input-group-lg colorpicker-component" >
-				  <input id="nicknameInput" class="form-control" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter nickname here..."></input>
-				  <span class="input-group-addon" style="border: 3px solid #f0ad4e;"><i></i></span>
+
+				<div class="panel with-nav-tabs panel-warning">
+					<div class="panel-heading">
+							<ul class="nav nav-pills nav-justified">
+								<li class="active"><button href="#tab1default" class="btn btn-block btn-lg btn-warning rounded-left" data-toggle="tab">Solo Play</button></li>
+								<li><button href="#tab2default" class="btn btn-block btn-lg btn-warning rounded-right" data-toggle="tab">Team Play</button></li>
+								
+							</ul>
+					</div>
+					<div class="panel-body">
+						<div class="tab-content">
+							<div class="tab-pane fade in active" style="height: 130px;" id="tab1default">
+								<div id="loginSoloForm" class="input-group input-group-lg colorpicker-component" >
+									<input id="nicknameSoloInput" class="form-control" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter nickname here..."></input>
+									<span class="input-group-addon" style="border: 3px solid #f0ad4e;"><i></i></span>
+								</div>
+								<button type="button" onclick="loginSolo()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
+							</div>
+							<div class="tab-pane fade" style="height: 130px;" id="tab2default">
+								<input id="nicknameTeamInput" class="form-control input-lg" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter nickname here..."></input>
+								<div id="loginTeamForm" class="input-group input-group-lg colorpicker-component" >
+									<input id="teamInput" class="form-control" type="text" style="border: 3px solid #f0ad4e;" placeholder="Enter your team name here..."></input>
+									<span class="input-group-addon" style="border: 3px solid #f0ad4e;"><i></i></span>
+								</div>
+								<button type="button" onclick="loginTeam()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
+							</div>
+						</div>
+					</div>
 				</div>
-				<button type="button" onclick="login()" class="rounded-botton btn-lg btn-block btn-warning">Solo Play</button>
-				<br>
 				<label for="sounds"> Sound FX </label>
 				<input checked type="checkbox" id="sounds" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger" data-size="large" data-style="ios">
-				
 				<h3 id="lastScore" class="last-stat"></h3>
 				<h3 id="lastRank" class="last-stat"></h3>
 			</div>

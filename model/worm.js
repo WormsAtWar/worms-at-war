@@ -5,7 +5,7 @@ var FIFOArray = require('./utils/FIFOArray');
 var CircularBoundary = require('./circular-boundary');
 var Food = require('./food');
 
-module.exports = function Worm(id, nickname, color) {
+module.exports = function Worm(id, nickname, color, teamname) {
 
 	this.id = id;
 	this.nickname = nickname == null ? '' : nickname;
@@ -17,6 +17,7 @@ module.exports = function Worm(id, nickname, color) {
 	this.segments = new FIFOArray();
 	this.onSpeed = false;
 	this.color = color == '#000000' ? colorGenerator.randomColor() : color;
+	this.teamname = teamname;
 	this.glasses = false;
 	this.kills = 0;
 	this.wormholeCreated = false;
