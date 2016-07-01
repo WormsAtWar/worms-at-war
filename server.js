@@ -236,7 +236,7 @@ io.sockets.on('connection', function(socket) {
 		if(myWorm.team) {
 			var team = teams.get(myWorm.team);
 			team.removeMember(myWorm.id);
-			if(team.member.length > 0) {
+			if(team.members.length > 0) {
 				socket.broadcast.emit('teamUpdate', team);
 			} else {
 				teams.removeByID(team.id);				
