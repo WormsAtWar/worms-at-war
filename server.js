@@ -233,8 +233,8 @@ io.sockets.on('connection', function(socket) {
 		}
 
 
-		if(myWorm.team) {
-			var team = teams.get(myWorm.team);
+		if(myWorm.teamname) {
+			var team = teams.get(myWorm.teamname);
 			team.removeMember(myWorm.id);
 			if(team.members.length > 0) {
 				socket.broadcast.emit('teamUpdate', team);
