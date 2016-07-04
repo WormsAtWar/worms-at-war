@@ -241,9 +241,9 @@ var WormShape = function(container, id) {
 	this.glasses;
 
 	this.create();
-	if(this.worm.glasses) {
+	/*if(this.worm.glasses) {
 		this.createGlasses();
-	}
+	}*/
 };
 
 WormShape.prototype = {
@@ -262,7 +262,7 @@ WormShape.prototype = {
 		this.createWantedHalo();
 		this.createBody();
 		this.createHead();
-		this.renderGlasses();
+		//this.renderGlasses();
 		this.createNick();
 	},
 
@@ -293,8 +293,9 @@ WormShape.prototype = {
 		var colorEffect = this.worm.onSpeed ? 'white' : 'black';
 
 		this.segments[index] = new Shape();
-		this.segments[index].graphics.beginRadialGradientFill([this.worm.color, colorEffect], [0, 1], -5, 0, 10, 0, 0, 35)
-										.drawCircle(0, 0, 20);
+		this.segments[index].graphics.beginRadialGradientFill([this.worm.color, colorEffect], [0, 1], segment.width*-0.25, 0, segment.width*0.5, 0, 0, segment.width*1.75)
+										.drawCircle(0, 0, segment.width);
+		//this.segments[index].graphics.beginFill(this.worm.color).drawCircle(0, 0, segment.width);
 		this.segments[index].set({
 			x: this.id != null ? segment.x : segment.x - this.worm.x + 500,
 			y: this.id != null ? segment.y : segment.y - this.worm.y + 300
@@ -307,8 +308,9 @@ WormShape.prototype = {
 		var colorEffect = this.worm.onSpeed ? 'white' : 'black';
 
 		this.head = new Shape();
-		this.head.graphics.beginRadialGradientFill([this.worm.color, colorEffect], [0, 1], -10, 0, 10, 0, 5, 35)
-							.drawCircle(0, 0, 23);
+		this.head.graphics.beginRadialGradientFill([this.worm.color, colorEffect], [0, 1], this.worm.head.width*-0.43, 0, this.worm.head.width*0.43, 0, this.worm.head.width*0.21, this.worm.head.width*1.52)
+							.drawCircle(0, 0, this.worm.head.width);
+		//this.head.graphics.beginFill(this.worm.color).drawCircle(0, 0, this.worm.head.width);
 		this.createEyes();
 		this.head.set({
 			x: this.id != null ? this.worm.x : 500,
@@ -321,13 +323,14 @@ WormShape.prototype = {
 
 	createEyes : function() {
 		if(!this.worm.glasses || this.withoutGlasses()) {
+			var headWidth = this.worm.head.width;
 			this.head.graphics.setStrokeStyle(2, 'square')
 							.beginStroke('#000000')
-							.beginFill('white').drawCircle(10, -15, 10)
-							.beginFill('white').drawCircle(10, 15, 10)
-							.beginFill('black').drawCircle(13, -15, 4)
-							.beginFill('black').drawCircle(13, 15, 4)
-							.endStroke();
+							.beginFill('white').drawCircle(headWidth*0.3125, headWidth*-0.652173913, headWidth*0.5)
+							.beginFill('white').drawCircle(headWidth*0.3125, headWidth*0.652173913, headWidth*0.5)
+							.endStroke()
+							.beginFill('black').drawCircle(headWidth*0.565217391, headWidth*-0.652173913, headWidth*0.173913043)
+							.beginFill('black').drawCircle(headWidth*0.565217391, headWidth*0.652173913, headWidth*0.173913043);
 		}
 	},
 

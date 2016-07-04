@@ -23,22 +23,49 @@ module.exports = function Worm(id, nickname, color, teamname) {
 	this.wormholeCreated = false;
 	this.lastUpdate = null;
 
-	this.deltaDisplacement = 15;
+	this.length;
+	this.width;
+	this.deltaDisplacement;
+	
 	this.modul = 0;
 
+
+	this.updateLength = function() {
+		this.length = this.score / 50 + 5;
+	};
+
+	this.updateWidth = function() {
+		this.width = this.score / 50 + 10;
+	};
+	
+	this.updateDeltaDisplacement = function() {
+		this.deltaDisplacement = this.onSpeed ? this.width : this.width * 0.75;
+	};
+
+	this.setMeasures = function() {
+		this.updateLength();
+		this.updateWidth();
+		this.updateDeltaDisplacement();
+	};
+
+	this.setMeasures();
+
+	this.updateMeasures = function() {
+		this.setMeasures();
+		this.head.updateWidth(this.width*1.15);
+		for(var i = 0; i < this.segments.length; i++) {
+			this.segments[i].updateWidth(this.width);
+		}
+	};
 
 	this.tail = function() {
 		return this.segments.last();
 	};
 
-	this.length = function() {
-		return this.score / 50 + 5;
-	}
-
 	this.generateHead = function() {
 		var randomX = 1000 + Math.random() * 2000;
 		var randomY = 1000 + Math.random() * 2000;
-		this.head = new WormHead(randomX, randomY);
+		this.head = new WormHead(randomX, randomY, this.width * 1.15);
 		this.x = randomX;
 		this.y = randomY;
 	};
@@ -58,11 +85,12 @@ module.exports = function Worm(id, nickname, color, teamname) {
 		
 		if(this.modul >= this.deltaDisplacement) {
 			this.modul = this.modul - this.deltaDisplacement;
-			this.segments.add(new WormSegment(this.x, this.y));
-			while(this.segments.length >= this.length()) {
+			this.segments.add(new WormSegment(this.x, this.y, this.width));
+			while(this.segments.length >= this.length) {
 				this.segments.remove();
 			}
 		}
+		this.updateMeasures();
 	};
 
 	this.teleport = function(wormhole) {
@@ -80,6 +108,7 @@ module.exports = function Worm(id, nickname, color, teamname) {
 
 	this.nitro = function(food) {
 		this.score -= 5;
+		this.updateMeasures();
 	};
 
 	this.addKill = function() {
@@ -123,23 +152,30 @@ module.exports = function Worm(id, nickname, color, teamname) {
 	};
 
 	this.collideWithBorder = function() {
-		return !((this.x + 20 < 4000 && this.x - 20 > 0) && (this.y + 20 < 4000 && this.y - 20 > 0));
+		return !((this.x + this.head.width < 4000 && this.x - this.head.width > 0) && 
+				 (this.y + this.head.width < 4000 && this.y - this.head.width > 0));
 	};
 
 };
 
 
-function WormHead(x, y) {
+function WormHead(x, y, width) {
 
 	this.x = x;
 	this.y = y;
 	this.rotation = 0;
+	this.width = width;
 	this.displacement;
-	this.boundary = new CircularBoundary(this.x, this.y, 23);
+	this.boundary = new CircularBoundary(this.x, this.y, this.width);
 
 
 	this.collide = function(collisionable) {
 		return this.boundary.collide(collisionable.boundary);
+	};
+
+	this.updateWidth = function(width) {
+		this.width = width;
+		this.boundary.radius = width;
 	};
 
 	this.lookTo = function(angle) {
@@ -167,11 +203,18 @@ function WormHead(x, y) {
 }
 
 
-function WormSegment(x,y) {
+function WormSegment(x, y, width) {
 
 	this.x = x;
 	this.y = y;
-	this.boundary = new CircularBoundary(this.x, this.y, 20);
+	this.width = width;
+	this.boundary = new CircularBoundary(this.x, this.y, this.width);
+
+
+	this.updateWidth = function(width) {
+		this.width = width;
+		this.boundary.radius = width;
+	};
 
 	this.vectorizedPosition = function() {
 		return Vector(this.x, this.y);

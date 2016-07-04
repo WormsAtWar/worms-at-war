@@ -191,7 +191,6 @@ io.sockets.on('connection', function(socket) {
 
 		if(myWorm.score >= 5) {
 			myWorm.onSpeed = true;
-			myWorm.deltaDisplacement = 20;
 			polarVelocity = {r: 200, w: polarVelocity.w}; // speed * 1.8
 			angularVelocity -= angularVelocity / 4; // less mobility on turns
 			nitroLoopID = setInterval(nitroLoop, 1000/4);
@@ -202,7 +201,6 @@ io.sockets.on('connection', function(socket) {
 		var myWorm = worms.get(myID);
 
 		myWorm.onSpeed = false;
-		myWorm.deltaDisplacement = 15;
 		polarVelocity = {r: 120, w: polarVelocity.w};
 		angularVelocity = Math.PI * 1;
 		clearInterval(nitroLoopID);
