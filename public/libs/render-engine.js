@@ -622,16 +622,16 @@ var KillsText = function(container) {
 KillsText.prototype = {
 
 	create : function() {
-		this.kills = new Text(Model.worm.kills, '16px sans-serif', 'yellow');
+		this.kills = new Text("Kills: " + Model.worm.kills, '16px sans-serif', 'yellow');
 		this.kills.set({
 			x: 20,
-			y: 70,
+			y: 65,
 		});
 		this.container.addChild(this.kills);
 	},
 
 	render : function() {
-		this.kills.text = Model.worm.kills;
+		this.kills.text = "Kills: " + Model.worm.kills;
 	},
 
 };
