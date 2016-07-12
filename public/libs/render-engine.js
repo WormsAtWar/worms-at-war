@@ -543,6 +543,7 @@ HUD.prototype = {
 
 	createElements : function() {
 		this.createScoreText();
+		this.createKillsText();
 		this.createWantedText();
 		this.createMinimap();
 		this.createRanking();
@@ -551,6 +552,10 @@ HUD.prototype = {
 
 	createScoreText : function() {
 		this.elements.push(new ScoreText(this.container));
+	},
+
+	createKillsText : function() {
+		this.elements.push(new KillsText(this.container));
 	},
 
 	createWantedText : function() {
@@ -607,7 +612,29 @@ ScoreText.prototype = {
 
 };
 
+var KillsText = function(container) {
+	this.container = container;
 
+	this.kills;
+	this.create();
+};
+
+KillsText.prototype = {
+
+	create : function() {
+		this.kills = new Text(Model.worm.kills, '16px sans-serif', 'yellow');
+		this.kills.set({
+			x: 20,
+			y: 70,
+		});
+		this.container.addChild(this.kills);
+	},
+
+	render : function() {
+		this.kills.text = Model.worm.kills;
+	},
+
+};
 
 
 var WantedText = function(container) {
