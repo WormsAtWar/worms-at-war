@@ -23,14 +23,14 @@
 				<div class="tips" style="width: 50%; margin: 0 auto; background-color: indigo; color: white;">
 					<ul>
 						<li>Solo Play: play as a lone wolf worm...</li>
-						<li>Team Play: play with your fellow worms...</li>
+						<li>League Play: play with your fellow worms...</li>
 						<li>When you enter a Wormhole, you'll teleport to another place in space!</li>
-						<li>If the Team doesn't exist, you can create it!</li>
+						<li>If the League doesn't exist, you can create it!</li>
 						<li>Bounty Hunter: you must kill the most wanted to collect his booty...</li>
-						<li>When you create a team, it will have the color you chose..</li>
+						<li>When you create a league, it will have the color you chose..</li>
 						<li>You can create a wormhole when you reach 100 points!</li>
 						<li>Your fellow worms are shown on your radar...</li>
-						<li>If the Team exist, you can join it!</li>
+						<li>If the League exist, you can join it!</li>
 						<li>Press Space to create Wormhole!</li>
 						<li>The worm with more kills will be the most wanted</li>
 						<li>Hold down Left-Click to speed up!</li>
@@ -44,7 +44,7 @@
 					<div class="panel-heading">
 							<ul class="nav nav-pills nav-justified">
 								<li class="active"><button href="#soloPlay" class="btn btn-block btn-lg btn-warning rounded-left" data-toggle="tab">Solo Play</button></li>
-								<li><button href="#teamPlay" class="btn btn-block btn-lg btn-warning rounded-right" data-toggle="tab">Team Play</button></li>
+								<li><button href="#leaguePlay" class="btn btn-block btn-lg btn-warning rounded-right" data-toggle="tab">League Play</button></li>
 								
 							</ul>
 					</div>
@@ -57,13 +57,13 @@
 								</div>
 								<button type="button" onclick="loginSolo()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
 							</div>
-							<div class="tab-pane fade" style="height: 130px;" id="teamPlay">
-								<input id="nicknameTeamInput" class="form-control input-lg" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter your nickname here..."></input>
-								<div id="loginTeamForm" class="input-group input-group-lg colorpicker-component" >
-									<input id="teamInput" class="form-control" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter your team name here..."></input>
+							<div class="tab-pane fade" style="height: 130px;" id="leaguePlay">
+								<input id="nicknameLeagueInput" class="form-control input-lg" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter your nickname here..."></input>
+								<div id="loginLeagueForm" class="input-group input-group-lg colorpicker-component" >
+									<input id="leagueInput" class="form-control" type="text" style="border: 1px solid #f0ad4e;" placeholder="Enter your league name here..."></input>
 									<span class="input-group-addon" style="border: 1px solid #f0ad4e;"><i></i></span>
 								</div>
-								<button type="button" onclick="loginTeam()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
+								<button type="button" onclick="loginLeague()" class="rounded-bottom btn-lg btn-block btn-warning">Start</button>
 							</div>
 						</div>
 					</div>

@@ -263,7 +263,7 @@ WormShape.prototype = {
 		this.createBody();
 		this.createHead();
 		this.renderGlasses();
-		this.createNick();
+		this.createTag();
 	},
 
 	createWantedHalo : function() {
@@ -358,15 +358,20 @@ WormShape.prototype = {
 		}
 	},
 
-	createNick : function() {
-		this.nickname = new Text(this.worm.nickname, 'bold 14px sans-serif', '#FFFFFF');
-		this.nickname.set({
-			regX: this.nickname.getMeasuredWidth() / 2,
+	createTag : function() {
+		this.tag = new Text(this.getTag(), 'bold 14px sans-serif', '#FFFFFF');
+		this.tag.set({
+			regX: this.tag.getMeasuredWidth() / 2,
 			regY: -30,
 			x: this.head.x,
 			y: this.head.y
 		});
-		this.container.addChild(this.nickname);
+		this.container.addChild(this.tag);
+	},
+
+	getTag : function() {
+		var league = this.worm.leaguename && this.worm.leaguename == Model.league.id ? " [" + this.worm.leaguename + "]" : "";
+		return this.worm.nickname + league;
 	},
 
 	withoutGlasses : function() {
@@ -374,7 +379,7 @@ WormShape.prototype = {
 	},
 
 	remove : function() {
-		this.container.removeChild(this.head, this.nickname, this.glasses);
+		this.container.removeChild(this.head, this.tag, this.glasses);
 		for(var i = 0; i < this.segments.length; i++) {
 			this.container.removeChild(this.segments[i]);
 		}
@@ -676,7 +681,7 @@ var Minimap = function(container) {
 
 	this.frame;
 	this.wormBlip;
-	this.teamBlips = new Array();
+	this.leagueBlips = new Array();
 	this.wantedBlip;
 	this.create();
 };
@@ -686,7 +691,7 @@ Minimap.prototype = {
 	create : function() {
 		this.createFrame();
 		this.createWormBlip();
-		this.createTeamBlips();
+		this.createLeagueBlips();
 		this.createWantedBlip();
 	},
 
@@ -715,11 +720,11 @@ Minimap.prototype = {
 		this.container.addChild(this.wormBlip);
 	},
 
-	createTeamBlips : function() {
-		if(Model.team) {
-			for(var i = 0; i < Model.team.members.length; i++) {
-				if(Model.otherWorms.get(Model.team.members[i])) {
-					this.createMemberBlip(Model.team.members[i]);
+	createLeagueBlips : function() {
+		if(Model.league) {
+			for(var i = 0; i < Model.league.members.length; i++) {
+				if(Model.otherWorms.get(Model.league.members[i])) {
+					this.createMemberBlip(Model.league.members[i]);
 				}
 			}
 		}
@@ -736,13 +741,13 @@ Minimap.prototype = {
 				x: coords.x,
 				y: coords.y
 			});
-			this.teamBlips.push(memberBlip);
+			this.leagueBlips.push(memberBlip);
 			this.container.addChild(memberBlip);
 		}
 	}, 
 
 	createWantedBlip : function() {
-		if(Model.wantedNotTeamMember()) {
+		if(Model.wantedNotLeagueMember()) {
 			var coords = this.traslateCoords(Model.wanted);
 			this.wantedBlip = new Shape();
 			this.wantedBlip.graphics.beginFill('red').drawCircle(0, 0, 4)
@@ -758,7 +763,7 @@ Minimap.prototype = {
 
 	render : function() {
 		this.renderWormBlip();
-		this.renderTeamBlips();
+		this.renderLeagueBlips();
 		this.renderWantedBlip();
 	},
 
@@ -770,16 +775,16 @@ Minimap.prototype = {
 		});
 	},
 
-	renderTeamBlips : function() {
-		this.removeTeamBlips();
-		this.createTeamBlips();
+	renderLeagueBlips : function() {
+		this.removeLeagueBlips();
+		this.createLeagueBlips();
 	},
 
-	removeTeamBlips : function() {
-		for(var i = 0; i < this.teamBlips.length; i++) {
-			this.container.removeChild(this.teamBlips[i]);
+	removeLeagueBlips : function() {
+		for(var i = 0; i < this.leagueBlips.length; i++) {
+			this.container.removeChild(this.leagueBlips[i]);
 		}
-		this.teamBlips = new Array();
+		this.leagueBlips = new Array();
 	},
 
 	renderWantedBlip : function() {

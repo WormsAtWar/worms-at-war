@@ -9,7 +9,7 @@ require('./model/utils/extend-module').extendArray();
 var Worm = require('./model/worm');
 var Food = require('./model/food');
 var Wormhole = require('./model/wormhole');
-var Team = require('./model/team');
+var League = require('./model/league');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -25,7 +25,7 @@ server.listen(process.env.PORT || 3000, function() {
 var wormID = 0;
 var worms = new Array();
 var ranking = new Array();
-var teams = new Array();
+var leagues = new Array();
 
 var foodID = 0;
 var foodMax = 300;
@@ -158,20 +158,20 @@ io.sockets.on('connection', function(socket) {
 
 		myID = wormID;
 
-		if(data.teamname) {
-			if(teams.get(data.teamname)) {
-				teams.get(data.teamname).addMember(myID);
+		if(data.leaguename) {
+			if(leagues.get(data.leaguename)) {
+				leagues.get(data.leaguename).addMember(myID);
 			} else {
-				teams.push(new Team(data.teamname, myID, data.color));
+				leagues.push(new League(data.leaguename, myID, data.color));
 			}
-			socket.broadcast.emit('teamUpdate', teams.get(data.teamname));
+			socket.broadcast.emit('leagueUpdate', leagues.get(data.leaguename));
 		}
 
-		var color = data.teamname ? teams.get(data.teamname).color : data.color;
+		var color = data.leaguename ? leagues.get(data.leaguename).color : data.color;
 
-		var worm = new Worm(wormID, data.nickname, color, data.teamname);
+		var worm = new Worm(wormID, data.nickname, color, data.leaguename);
 
-		socket.emit('loginSuccess', { worm: worm, otherWorms: worms, foods: foods, wormholes: wormholes, team: teams.get(data.teamname) });
+		socket.emit('loginSuccess', { worm: worm, otherWorms: worms, foods: foods, wormholes: wormholes, league: leagues.get(data.leaguename) });
 
 		worms.push(worm);
 
@@ -233,13 +233,13 @@ io.sockets.on('connection', function(socket) {
 		}
 
 
-		if(myWorm.teamname) {
-			var team = teams.get(myWorm.teamname);
-			team.removeMember(myWorm.id);
-			if(team.members.length > 0) {
-				socket.broadcast.emit('teamUpdate', team);
+		if(myWorm.leaguename) {
+			var league = leagues.get(myWorm.leaguename);
+			league.removeMember(myWorm.id);
+			if(league.members.length > 0) {
+				socket.broadcast.emit('leagueUpdate', league);
 			} else {
-				teams.removeByID(team.id);				
+				leagues.removeByID(league.id);				
 			}
 		}
 
@@ -285,7 +285,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	function updatePosition(delta) {
-		worms.get(myID).moveTo(currentVelocity(delta));
+		worms.get(myID).move(currentVelocity(delta));
 	}
 
 	function updateHeadRotation(delta) {

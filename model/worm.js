@@ -5,7 +5,7 @@ var FIFOArray = require('./utils/FIFOArray');
 var CircularBoundary = require('./circular-boundary');
 var Food = require('./food');
 
-module.exports = function Worm(id, nickname, color, teamname) {
+module.exports = function Worm(id, nickname, color, leaguename) {
 
 	this.id = id;
 	this.nickname = nickname == null ? '' : nickname;
@@ -17,7 +17,7 @@ module.exports = function Worm(id, nickname, color, teamname) {
 	this.segments = new FIFOArray();
 	this.onSpeed = false;
 	this.color = color == '#000000' ? colorGenerator.randomColor() : color;
-	this.teamname = teamname;
+	this.leaguename = leaguename;
 	this.glasses = false;
 	this.kills = 0;
 	this.wormholeCreated = false;
@@ -50,8 +50,8 @@ module.exports = function Worm(id, nickname, color, teamname) {
 		this.y = this.head.y;
 	};
 
-	this.moveTo = function(displacement) {
-		this.head.moveTo(displacement);
+	this.move = function(displacement) {
+		this.head.move(displacement);
 		this.updatePosition();
 
 		this.modul += Vector.len(displacement);
@@ -150,7 +150,7 @@ function WormHead(x, y) {
 		return Vector(this.x, this.y);
 	}
 
-	this.moveTo = function(displacement) {
+	this.move = function(displacement) {
 		var newPosition = Vector.sum(this.vectorizedPosition(), displacement);
 		this.x = newPosition.x;
 		this.y = newPosition.y;

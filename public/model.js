@@ -18,7 +18,7 @@ Model.prototype = {
 	reset : function() {
 		this.worm = null;
 		this.otherWorms = new Array();
-		this.team = null;
+		this.league = null;
 		this.foods = new Array();
 		this.wanted = null;
 		this.topTen = new Array();
@@ -94,8 +94,8 @@ Model.prototype = {
 		return Model.wanted && worm.id == model.wanted.id;
 	},
 
-	wantedNotTeamMember : function() {
-		return Model.team && Model.wanted && !Model.team.members.includes(Model.wanted.id);
+	wantedNotLeagueMember : function() {
+		return Model.league && Model.wanted && !Model.league.members.includes(Model.wanted.id);
 	},
 
 };

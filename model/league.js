@@ -1,5 +1,5 @@
 
-module.exports = function Team(id, leaderID, color) {
+module.exports = function League(id, leaderID, color) {
 	
 	this.id = id;
 	this.members = [leaderID];
